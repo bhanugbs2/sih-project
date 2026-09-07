@@ -1,39 +1,32 @@
 package com.nexora.honeychain.model;
 
-import com.nexora.honeychain.model.enums.HiveStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "hives")
-public class Hive {
+@Table(name = "farms")
+public class Farm {
 
     @Id
     private String id;
 
     @NotBlank
-    @Column(name = "hive_id", nullable = false, unique = true)
-    private String hiveId;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "farm_id", nullable = false)
-    private Farm farm;
+    @Column(name = "farm_id", nullable = false, unique = true)
+    private String farmId;
 
     @NotBlank
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NotBlank
+    @Column(name = "owner_name", nullable = false)
+    private String ownerName;
+
     private String location;
     private Double latitude;
     private Double longitude;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private HiveStatus status = HiveStatus.ACTIVE;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -55,29 +48,28 @@ public class Hive {
         this.updatedAt = Instant.now();
     }
 
-    public Hive() {}
+    public Farm() {}
 
-    public Hive(String hiveId, Farm farm, String name, String location, Double latitude, Double longitude, HiveStatus status) {
-        this.hiveId = hiveId;
-        this.farm = farm;
+    public Farm(String farmId, String name, String ownerName, String location, Double latitude, Double longitude) {
+        this.farmId = farmId;
         this.name = name;
+        this.ownerName = ownerName;
         this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.status = status != null ? status : HiveStatus.ACTIVE;
     }
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getHiveId() { return hiveId; }
-    public void setHiveId(String hiveId) { this.hiveId = hiveId; }
-
-    public Farm getFarm() { return farm; }
-    public void setFarm(Farm farm) { this.farm = farm; }
+    public String getFarmId() { return farmId; }
+    public void setFarmId(String farmId) { this.farmId = farmId; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getOwnerName() { return ownerName; }
+    public void setOwnerName(String ownerName) { this.ownerName = ownerName; }
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
@@ -87,9 +79,6 @@ public class Hive {
 
     public Double getLongitude() { return longitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
-
-    public HiveStatus getStatus() { return status; }
-    public void setStatus(HiveStatus status) { this.status = status; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
