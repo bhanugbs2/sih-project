@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: honeychain-backend
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+honeychain:
+  project:
+    name: HoneyChain
+    sih-id: SIH26021
+    team: Nexora
+    version: 1.0.0-phase1
