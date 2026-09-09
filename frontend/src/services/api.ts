@@ -251,3 +251,25 @@ export const verifyPackage = async (packageId: string): Promise<VerificationResu
   const response = await apiClient.get<VerificationResult>(`/api/verify/${packageId}`);
   return response.data;
 };
+
+// Blockchain Ledger & Anchoring Service
+export const anchorBlockchainEvent = async (eventId: string): Promise<TraceabilityEvent> => {
+  const response = await apiClient.post<TraceabilityEvent>(`/api/blockchain/anchor/${eventId}`);
+  return response.data;
+};
+
+export const getBlockchainEventStatus = async (eventId: string): Promise<TraceabilityEvent> => {
+  const response = await apiClient.get<TraceabilityEvent>(`/api/blockchain/event/${eventId}`);
+  return response.data;
+};
+
+export const getBatchBlockchainTraceability = async (batchId: string): Promise<TraceabilityEvent[]> => {
+  const response = await apiClient.get<TraceabilityEvent[]>(`/api/blockchain/batch/${batchId}`);
+  return response.data;
+};
+
+export const getBlockchainConfigStatus = async (): Promise<any> => {
+  const response = await apiClient.get('/api/blockchain/status');
+  return response.data;
+};
+

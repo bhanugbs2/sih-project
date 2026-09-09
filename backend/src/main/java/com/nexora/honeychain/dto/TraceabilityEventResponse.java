@@ -1,6 +1,7 @@
 package com.nexora.honeychain.dto;
 
 import com.nexora.honeychain.model.enums.BlockchainEnvironment;
+import com.nexora.honeychain.model.enums.BlockchainStatus;
 import com.nexora.honeychain.model.enums.TraceabilityEventType;
 import java.time.Instant;
 
@@ -14,6 +15,11 @@ public class TraceabilityEventResponse {
     private Instant timestamp;
     private String blockchainReference;
     private BlockchainEnvironment environment;
+    private BlockchainStatus blockchainStatus;
+    private String blockchainTransactionHash;
+    private String blockchainNetwork;
+    private Instant blockchainTimestamp;
+    private String blockchainDataHash;
     private Instant createdAt;
 
     public TraceabilityEventResponse() {}
@@ -28,6 +34,7 @@ public class TraceabilityEventResponse {
         this.blockchainReference = blockchainReference;
         this.environment = environment;
         this.createdAt = createdAt;
+        this.blockchainStatus = BlockchainStatus.NOT_CONFIGURED;
     }
 
     public String getId() { return id; }
@@ -54,6 +61,22 @@ public class TraceabilityEventResponse {
     public BlockchainEnvironment getEnvironment() { return environment; }
     public void setEnvironment(BlockchainEnvironment environment) { this.environment = environment; }
 
+    public BlockchainStatus getBlockchainStatus() { return blockchainStatus; }
+    public void setBlockchainStatus(BlockchainStatus blockchainStatus) { this.blockchainStatus = blockchainStatus; }
+
+    public String getBlockchainTransactionHash() { return blockchainTransactionHash; }
+    public void setBlockchainTransactionHash(String blockchainTransactionHash) { this.blockchainTransactionHash = blockchainTransactionHash; }
+
+    public String getBlockchainNetwork() { return blockchainNetwork; }
+    public void setBlockchainNetwork(String blockchainNetwork) { this.blockchainNetwork = blockchainNetwork; }
+
+    public Instant getBlockchainTimestamp() { return blockchainTimestamp; }
+    public void setBlockchainTimestamp(Instant blockchainTimestamp) { this.blockchainTimestamp = blockchainTimestamp; }
+
+    public String getBlockchainDataHash() { return blockchainDataHash; }
+    public void setBlockchainDataHash(String blockchainDataHash) { this.blockchainDataHash = blockchainDataHash; }
+
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }
+

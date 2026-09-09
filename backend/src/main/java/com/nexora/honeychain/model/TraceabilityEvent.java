@@ -1,6 +1,7 @@
 package com.nexora.honeychain.model;
 
 import com.nexora.honeychain.model.enums.BlockchainEnvironment;
+import com.nexora.honeychain.model.enums.BlockchainStatus;
 import com.nexora.honeychain.model.enums.TraceabilityEventType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -42,6 +43,22 @@ public class TraceabilityEvent {
     @Column(name = "environment", nullable = false)
     private BlockchainEnvironment environment = BlockchainEnvironment.DEVELOPMENT;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "blockchain_status")
+    private BlockchainStatus blockchainStatus = BlockchainStatus.NOT_CONFIGURED;
+
+    @Column(name = "blockchain_transaction_hash")
+    private String blockchainTransactionHash;
+
+    @Column(name = "blockchain_network")
+    private String blockchainNetwork;
+
+    @Column(name = "blockchain_timestamp")
+    private Instant blockchainTimestamp;
+
+    @Column(name = "blockchain_data_hash")
+    private String blockchainDataHash;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -54,6 +71,9 @@ public class TraceabilityEvent {
             this.timestamp = Instant.now();
         }
         this.createdAt = Instant.now();
+        if (this.blockchainStatus == null) {
+            this.blockchainStatus = BlockchainStatus.NOT_CONFIGURED;
+        }
     }
 
     public TraceabilityEvent() {}
@@ -66,6 +86,7 @@ public class TraceabilityEvent {
         this.timestamp = timestamp;
         this.blockchainReference = blockchainReference;
         this.environment = environment != null ? environment : BlockchainEnvironment.DEVELOPMENT;
+        this.blockchainStatus = BlockchainStatus.NOT_CONFIGURED;
     }
 
     public String getId() { return id; }
@@ -92,6 +113,22 @@ public class TraceabilityEvent {
     public BlockchainEnvironment getEnvironment() { return environment; }
     public void setEnvironment(BlockchainEnvironment environment) { this.environment = environment; }
 
+    public BlockchainStatus getBlockchainStatus() { return blockchainStatus; }
+    public void setBlockchainStatus(BlockchainStatus blockchainStatus) { this.blockchainStatus = blockchainStatus; }
+
+    public String getBlockchainTransactionHash() { return blockchainTransactionHash; }
+    public void setBlockchainTransactionHash(String blockchainTransactionHash) { this.blockchainTransactionHash = blockchainTransactionHash; }
+
+    public String getBlockchainNetwork() { return blockchainNetwork; }
+    public void setBlockchainNetwork(String blockchainNetwork) { this.blockchainNetwork = blockchainNetwork; }
+
+    public Instant getBlockchainTimestamp() { return blockchainTimestamp; }
+    public void setBlockchainTimestamp(Instant blockchainTimestamp) { this.blockchainTimestamp = blockchainTimestamp; }
+
+    public String getBlockchainDataHash() { return blockchainDataHash; }
+    public void setBlockchainDataHash(String blockchainDataHash) { this.blockchainDataHash = blockchainDataHash; }
+
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }
+

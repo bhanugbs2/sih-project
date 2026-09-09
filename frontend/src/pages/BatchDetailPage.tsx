@@ -199,7 +199,7 @@ export const BatchDetailPage: React.FC = () => {
       {/* Visual Supply Chain Lifecycle Progress Bar */}
       <div className="glass-panel" style={{ padding: '1.75rem 1.5rem', marginBottom: '1.5rem' }}>
         <h4 style={{ fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: '1.5rem', fontWeight: 700 }}>
-          Phase 7 Supply Chain Lifecycle Sequence
+          Phase 8 Supply Chain Lifecycle & Blockchain Proof Sequence
         </h4>
 
         {batch.status === 'RECALLED' ? (
@@ -253,6 +253,23 @@ export const BatchDetailPage: React.FC = () => {
             })}
           </div>
         )}
+
+        {/* Phase 8 Blockchain Proof Banner */}
+        <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px dashed var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-emerald)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <CheckCircle2 size={16} /> Immutable Blockchain Ledger Status
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+              {traceabilityEvents.some(e => e.blockchainTransactionHash)
+                ? 'Batch milestones are anchored on EVM smart contract.'
+                : 'Blockchain anchoring is not configured for this development environment.'}
+            </div>
+          </div>
+          <button className="btn-secondary" onClick={() => navigate('/traceability')} style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}>
+            View Full Traceability Audit
+          </button>
+        </div>
       </div>
 
       {/* Grid of Dual Cards: Quality Test vs AI Screening */}

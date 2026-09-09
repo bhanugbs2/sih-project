@@ -172,10 +172,10 @@ export const VerifyPage: React.FC = () => {
 
                 <div style={{ textAlign: 'right', background: 'rgba(0, 0, 0, 0.3)', padding: '0.75rem 1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    BLOCKCHAIN VERIFICATION
+                    EVM BLOCKCHAIN PROOF
                   </div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-cyan)', marginTop: '0.2rem' }}>
-                    {result.blockchainVerificationStatus === 'VERIFIED' ? '✓ VERIFIED ON-CHAIN' : 'Pending Blockchain Verification'}
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: result.blockchainVerificationStatus === 'VERIFIED' ? 'var(--accent-emerald)' : 'var(--honey-gold)', marginTop: '0.2rem' }}>
+                    {result.blockchainVerificationStatus === 'VERIFIED' ? '✓ ANCHORED ON-CHAIN' : 'OFF-CHAIN VERIFIED'}
                   </div>
                 </div>
               </div>

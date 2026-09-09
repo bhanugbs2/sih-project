@@ -261,6 +261,7 @@ export interface CreatePackageRequest {
 
 export type TraceabilityEventType = 'HARVESTED' | 'QUALITY_TESTED' | 'QUALITY_VERIFIED' | 'AI_SCREENED' | 'PROCESSING' | 'PROCESSED' | 'READY_FOR_PACKAGING' | 'PACKAGED' | 'VERIFIED';
 export type BlockchainEnvironment = 'DEVELOPMENT' | 'TEST' | 'PRODUCTION';
+export type BlockchainStatus = 'OFF_CHAIN_VERIFIED' | 'PENDING' | 'BLOCKCHAIN_ANCHORED' | 'NOT_CONFIGURED' | 'FAILED';
 
 export interface TraceabilityEvent {
   id: string;
@@ -271,7 +272,21 @@ export interface TraceabilityEvent {
   timestamp: string;
   blockchainReference?: string;
   environment: BlockchainEnvironment;
+  blockchainStatus?: BlockchainStatus;
+  blockchainTransactionHash?: string;
+  blockchainNetwork?: string;
+  blockchainTimestamp?: string;
+  blockchainDataHash?: string;
   createdAt?: string;
+}
+
+export interface BlockchainConfigStatus {
+  enabled: boolean;
+  configured: boolean;
+  networkName: string;
+  chainId: number;
+  contractAddress: string;
+  rpcUrl: string;
 }
 
 export interface VerificationResult {

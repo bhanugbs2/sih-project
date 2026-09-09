@@ -87,7 +87,7 @@ npm run dev
 | **Frontend Framework** | React 18+ (TypeScript, Vite, Custom Vanilla CSS) | PWA Offline Sync Support |
 | **IoT Hardware** | **ESP32-WROOM-32, DHT22 (Temp & Humidity), SSD1306 OLED** | **HX711 Load Cell, Microphone, SIM7000G GPS** |
 | **AI / ML Layer** | **Rule-Based AI-Assisted Screening & Decision Support** | **DJL / ONNX Neural Networks / Time-Series ML** |
-| **Blockchain Layer** | **Off-Chain Cryptographic Hashing & Traceability Events** | **Future On-Chain EVM Smart Contract Anchoring** |
+| **Blockchain Layer** | **EVM Smart Contract Anchoring (`HoneyTraceability.sol`), Web3j, SHA-256 Hashing** | Mainnet EVM / L2 Anchoring (Polygon/Arbitrum) |
 
 ---
 
@@ -101,6 +101,8 @@ npm run dev
 - [Phase 4 React Dashboard & Frontend Report](file:///d:/honey-chain/docs/phase-4-report.md)
 - [Phase 5 ESP32 + DHT22 + OLED IoT Integration Report](file:///d:/honey-chain/docs/phase-5-report.md)
 - [Phase 6 AI-Assisted Screening Decision Engine Report](file:///d:/honey-chain/docs/phase-6-report.md)
+- [Phase 7 Post-Harvest & Processing Workflow Report](file:///d:/honey-chain/docs/phase-7-report.md)
+- [Phase 8 Blockchain Traceability & Smart Contract Report](file:///d:/honey-chain/docs/phase-8-report.md)
 
 ---
 

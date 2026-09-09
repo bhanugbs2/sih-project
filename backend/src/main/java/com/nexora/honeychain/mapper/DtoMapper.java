@@ -233,7 +233,7 @@ public class DtoMapper {
 
     public static TraceabilityEventResponse toTraceabilityEventResponse(TraceabilityEvent event) {
         if (event == null) return null;
-        return new TraceabilityEventResponse(
+        TraceabilityEventResponse res = new TraceabilityEventResponse(
                 event.getId(),
                 event.getBatch() != null ? event.getBatch().getBatchId() : null,
                 event.getPackageEntity() != null ? event.getPackageEntity().getPackageId() : null,
@@ -244,5 +244,11 @@ public class DtoMapper {
                 event.getEnvironment(),
                 event.getCreatedAt()
         );
+        res.setBlockchainStatus(event.getBlockchainStatus());
+        res.setBlockchainTransactionHash(event.getBlockchainTransactionHash());
+        res.setBlockchainNetwork(event.getBlockchainNetwork());
+        res.setBlockchainTimestamp(event.getBlockchainTimestamp());
+        res.setBlockchainDataHash(event.getBlockchainDataHash());
+        return res;
     }
 }
