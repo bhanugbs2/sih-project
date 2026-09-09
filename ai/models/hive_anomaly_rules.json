@@ -1,0 +1,31 @@
+{
+  "model": "HoneyChain Hive Anomaly Detector v1.0",
+  "temperatureThresholds": {
+    "optimalMin": 34.0,
+    "optimalMax": 36.0,
+    "criticalHigh": 38.0,
+    "criticalLow": 31.0
+  },
+  "humidityThresholds": {
+    "optimalMin": 50.0,
+    "optimalMax": 65.0,
+    "warningHigh": 70.0
+  },
+  "acousticThresholds": {
+    "normalBandMin": 220.0,
+    "normalBandMax": 250.0,
+    "swarmFrequency": 210.0
+  },
+  "riskScoreWeights": {
+    "temperatureVariance": 45,
+    "humidityVariance": 30,
+    "acousticVariance": 25
+  },
+  "messages": {
+    "normal": "Hive status optimal. Internal environmental parameters within standard screening thresholds.",
+    "thermalSpike": "Abnormal thermal spike detected (>38.0°C). Beekeeper inspection recommended.",
+    "thermalDrop": "Colony temperature drop detected (<31.0°C). Check hive insulation and cluster status.",
+    "humidityHigh": "Elevated moisture condensation detected (>70%). Inspect hive ventilation.",
+    "swarmAlert": "Acoustic shift to 210Hz indicates potential queen distress / pre-swarm activity."
+  }
+}

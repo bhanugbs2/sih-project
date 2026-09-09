@@ -37,6 +37,12 @@ public class HoneyBatch {
     @Column(name = "unit", nullable = false)
     private String unit;
 
+    @Column(name = "harvest_notes", length = 1000)
+    private String harvestNotes;
+
+    @Column(name = "quantity_source")
+    private String quantitySource = "Manual Harvest Quantity";
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -52,6 +58,9 @@ public class HoneyBatch {
     protected void onCreate() {
         if (this.id == null) {
             this.id = UUID.randomUUID().toString();
+        }
+        if (this.quantitySource == null) {
+            this.quantitySource = "Manual Harvest Quantity";
         }
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
@@ -70,6 +79,18 @@ public class HoneyBatch {
         this.harvestDate = harvestDate;
         this.quantity = quantity;
         this.unit = unit;
+        this.status = status != null ? status : HoneyBatchStatus.HARVESTED;
+        this.quantitySource = "Manual Harvest Quantity";
+    }
+
+    public HoneyBatch(String batchId, Hive hive, LocalDate harvestDate, Double quantity, String unit, String harvestNotes, String quantitySource, HoneyBatchStatus status) {
+        this.batchId = batchId;
+        this.hive = hive;
+        this.harvestDate = harvestDate;
+        this.quantity = quantity;
+        this.unit = unit;
+        this.harvestNotes = harvestNotes;
+        this.quantitySource = quantitySource != null ? quantitySource : "Manual Harvest Quantity";
         this.status = status != null ? status : HoneyBatchStatus.HARVESTED;
     }
 
@@ -90,6 +111,12 @@ public class HoneyBatch {
 
     public String getUnit() { return unit; }
     public void setUnit(String unit) { this.unit = unit; }
+
+    public String getHarvestNotes() { return harvestNotes; }
+    public void setHarvestNotes(String harvestNotes) { this.harvestNotes = harvestNotes; }
+
+    public String getQuantitySource() { return quantitySource; }
+    public void setQuantitySource(String quantitySource) { this.quantitySource = quantitySource; }
 
     public HoneyBatchStatus getStatus() { return status; }
     public void setStatus(HoneyBatchStatus status) { this.status = status; }

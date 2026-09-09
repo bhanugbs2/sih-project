@@ -1,141 +1,239 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
-  Cpu,
   Boxes,
+  Activity,
+  AlertOctagon,
+  PackageCheck,
   FlaskConical,
   Filter,
-  PackageCheck,
-  Link2,
-  ShieldCheck,
-  LogIn,
-  Hexagon,
+  Package,
+  FileCheck2,
+  Users,
+  Building2,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck
 } from 'lucide-react';
 
-export const Sidebar: React.FC = () => {
-  const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/hives', label: 'Smart Hives (IoT)', icon: Cpu },
-    { path: '/batches', label: 'Honey Batches', icon: Boxes },
-    { path: '/quality', label: 'Quality & Testing', icon: FlaskConical },
-    { path: '/processing', label: 'Processing Logs', icon: Filter },
-    { path: '/packages', label: 'Packages & QR', icon: PackageCheck },
-    { path: '/blockchain', label: 'Blockchain Ledger', icon: Link2 },
-    { path: '/verify', label: 'Public Verification', icon: ShieldCheck },
-    { path: '/login', label: 'Account / Login', icon: LogIn },
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileClose }) => {
+  const { role, logout } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
+
+  const navigationItems = [
+    { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
+    { label: 'Hives', path: '/hives', icon: Boxes, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
+    { label: 'Sensor History', path: '/hives/HIVE-HIM-001', icon: Activity, roles: ['ADMIN', 'BEEKEEPER'] },
+    { label: 'AI Alerts', path: '/alerts', icon: AlertOctagon, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
+    { label: 'Honey Batches', path: '/batches', icon: PackageCheck, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
+    { label: 'Quality Testing', path: '/quality', icon: FlaskConical, roles: ['ADMIN', 'QUALITY_INSPECTOR'] },
+    { label: 'Processing Logs', path: '/processing', icon: Filter, roles: ['ADMIN', 'BEEKEEPER'] },
+    { label: 'Consumer Packages', path: '/packages', icon: Package, roles: ['ADMIN', 'BEEKEEPER'] },
+    { label: 'Supply Chain Audit', path: '/traceability', icon: FileCheck2, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
   ];
 
+  const adminItems = [
+    { label: 'Apiary Farms', path: '/farms', icon: Building2, roles: ['ADMIN', 'BEEKEEPER'] },
+    { label: 'User Accounts', path: '/users', icon: Users, roles: ['ADMIN'] },
+  ];
+
+  const allowedNav = navigationItems.filter(item => !role || item.roles.includes(role));
+  const allowedAdminNav = adminItems.filter(item => !role || item.roles.includes(role));
+
+  const width = collapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)';
+
   return (
-    <aside
-      style={{
-        width: 'var(--sidebar-width)',
-        backgroundColor: 'var(--bg-secondary)',
-        borderRight: '1px solid var(--border-color)',
+    <aside style={{
+      width: width,
+      height: '100vh',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      zIndex: 100,
+      background: 'rgba(12, 16, 26, 0.95)',
+      backdropFilter: 'blur(16px)',
+      borderRight: '1px solid var(--border-color)',
+      display: 'flex',
+      flexDirection: 'column',
+      transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      overflowX: 'hidden'
+    }}>
+      {/* Sidebar Header */}
+      <div style={{
+        height: 'var(--topbar-height)',
         display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        position: 'fixed',
-        left: 0,
-        top: 0,
-        zIndex: 50,
-      }}
-    >
-      {/* Brand Header */}
-      <div
-        style={{
-          padding: '1.5rem 1.25rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          borderBottom: '1px solid var(--border-color)',
-        }}
-      >
-        <div
-          style={{
-            width: '40px',
-            height: '40px',
+        alignItems: 'center',
+        justifyContent: collapsed ? 'center' : 'space-between',
+        padding: collapsed ? '0' : '0 1.25rem',
+        borderBottom: '1px solid var(--border-color)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{
+            width: '38px',
+            height: '38px',
             borderRadius: '10px',
             background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#000',
-            boxShadow: '0 0 16px var(--honey-glow)',
+            fontWeight: 800,
+            fontSize: '1.2rem',
+            boxShadow: '0 4px 14px rgba(245, 158, 11, 0.3)'
+          }}>
+            🍯
+          </div>
+          {!collapsed && (
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                Honey<span className="gradient-text">Chain</span>
+              </div>
+              <div style={{ fontSize: '0.65rem', color: 'var(--honey-gold)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+                Smart Beekeeping
+              </div>
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid var(--border-color)',
+            color: 'var(--text-secondary)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.35rem',
+            cursor: 'pointer',
+            display: collapsed ? 'none' : 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
-          <Hexagon size={24} strokeWidth={2.5} />
+          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </button>
+      </div>
+
+      {/* Navigation Links */}
+      <div style={{ flex: 1, padding: '1rem 0.75rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.08em', padding: collapsed ? '0 0 0.5rem 0' : '0.5rem 0.75rem', textAlign: collapsed ? 'center' : 'left' }}>
+          {collapsed ? '•' : 'Main Menu'}
         </div>
-        <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, lineHeight: 1.1 }}>
-            Honey<span className="gradient-text">Chain</span>
-          </h2>
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
-            SIH26021 • NEXORA
-          </span>
+
+        {allowedNav.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            onClick={onMobileClose}
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            style={({ isActive }) => ({
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.85rem',
+              padding: collapsed ? '0.75rem 0' : '0.7rem 0.85rem',
+              justifyContent: collapsed ? 'center' : 'flex-start',
+              borderRadius: 'var(--radius-md)',
+              color: isActive ? '#000' : 'var(--text-secondary)',
+              background: isActive ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' : 'transparent',
+              fontWeight: isActive ? 600 : 500,
+              fontSize: '0.9rem',
+              textDecoration: 'none',
+              transition: 'all 0.2s ease',
+              boxShadow: isActive ? '0 4px 12px rgba(245, 158, 11, 0.25)' : 'none'
+            })}
+          >
+            <item.icon size={19} />
+            {!collapsed && <span>{item.label}</span>}
+          </NavLink>
+        ))}
+
+        {allowedAdminNav.length > 0 && (
+          <>
+            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.08em', padding: collapsed ? '1rem 0 0.5rem 0' : '1.25rem 0.75rem 0.5rem 0.75rem', textAlign: collapsed ? 'center' : 'left' }}>
+              {collapsed ? '•' : 'Administration'}
+            </div>
+            {allowedAdminNav.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onClick={onMobileClose}
+                style={({ isActive }) => ({
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.85rem',
+                  padding: collapsed ? '0.75rem 0' : '0.7rem 0.85rem',
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  borderRadius: 'var(--radius-md)',
+                  color: isActive ? '#000' : 'var(--text-secondary)',
+                  background: isActive ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' : 'transparent',
+                  fontWeight: isActive ? 600 : 500,
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease'
+                })}
+              >
+                <item.icon size={19} />
+                {!collapsed && <span>{item.label}</span>}
+              </NavLink>
+            ))}
+          </>
+        )}
+
+        <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+          <NavLink
+            to="/verify/HC-PKG-2026-001"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.85rem',
+              padding: collapsed ? '0.75rem 0' : '0.7rem 0.85rem',
+              justifyContent: collapsed ? 'center' : 'flex-start',
+              borderRadius: 'var(--radius-md)',
+              color: 'var(--accent-emerald)',
+              background: 'rgba(16, 185, 129, 0.1)',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              textDecoration: 'none'
+            }}
+          >
+            <ShieldCheck size={19} />
+            {!collapsed && <span>Public Verify</span>}
+          </NavLink>
         </div>
       </div>
 
-      {/* Navigation List */}
-      <nav style={{ padding: '1rem 0.75rem', flex: 1, overflowY: 'auto' }}>
-        <div
+      {/* Sidebar Footer Logout */}
+      <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid var(--border-color)' }}>
+        <button
+          onClick={logout}
           style={{
-            fontSize: '0.7rem',
-            fontWeight: 700,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            padding: '0.5rem 0.75rem',
-            marginBottom: '0.5rem',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            gap: '0.75rem',
+            padding: '0.65rem 0.85rem',
+            borderRadius: 'var(--radius-md)',
+            background: 'rgba(244, 63, 94, 0.1)',
+            color: 'var(--accent-rose)',
+            border: '1px solid rgba(244, 63, 94, 0.25)',
+            fontWeight: 600,
+            fontSize: '0.875rem',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
           }}
         >
-          Navigation Routes
-        </div>
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => (isActive ? 'active-nav' : '')}
-              style={({ isActive }) => ({
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.85rem',
-                padding: '0.75rem 1rem',
-                borderRadius: 'var(--radius-md)',
-                color: isActive ? '#000' : 'var(--text-secondary)',
-                background: isActive
-                  ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
-                  : 'transparent',
-                fontWeight: isActive ? 700 : 500,
-                textDecoration: 'none',
-                marginBottom: '0.35rem',
-                transition: 'all 0.2s ease',
-                boxShadow: isActive ? '0 4px 14px var(--honey-glow)' : 'none',
-              })}
-            >
-              <Icon size={19} />
-              <span style={{ fontSize: '0.9rem' }}>{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
-
-      {/* Footer Info Badge */}
-      <div
-        style={{
-          padding: '1rem',
-          borderTop: '1px solid var(--border-color)',
-          fontSize: '0.75rem',
-          color: 'var(--text-muted)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-          <div className="pulsing-dot" />
-          <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>System Active</span>
-        </div>
-        <div>Phase 0 Monorepo Setup</div>
+          <LogOut size={18} />
+          {!collapsed && <span>Sign Out</span>}
+        </button>
       </div>
     </aside>
   );

@@ -9,5 +9,7 @@ import java.util.List;
 @Repository
 public interface TraceabilityEventRepository extends JpaRepository<TraceabilityEvent, String> {
     List<TraceabilityEvent> findByBatchBatchId(String batchId);
+    List<TraceabilityEvent> findByBatchBatchIdOrderByTimestampAsc(String batchId);
     List<TraceabilityEvent> findByPackageEntityPackageId(String packageId);
+    List<TraceabilityEvent> findByPackageEntityPackageIdOrderByTimestampAsc(String packageId);
 }

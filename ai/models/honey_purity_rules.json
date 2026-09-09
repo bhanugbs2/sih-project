@@ -1,0 +1,24 @@
+{
+  "model": "HoneyChain Honey Purity Scoring Engine v1.0",
+  "moistureRules": {
+    "maxAllowedPercent": 20.0,
+    "optimalMin": 15.0,
+    "optimalMax": 17.5,
+    "penaltyPerUnitAboveOptimal": 8.0
+  },
+  "phRules": {
+    "minPh": 3.4,
+    "maxPh": 4.5,
+    "penaltyPerUnitOut": 15.0
+  },
+  "adulterationRiskClasses": {
+    "pure": "PURE",
+    "moistureDilution": "SUSPECTED_MOISTURE_DILUTION",
+    "qualityAnomaly": "QUALITY_PARAMETER_ANOMALY"
+  },
+  "messages": {
+    "pure": "Measured parameters are within the configured screening thresholds. Further laboratory validation is recommended for definitive authenticity assessment.",
+    "moistureHigh": "Elevated moisture variance detected in batch sample (>20.0%). Secondary lab validation advised.",
+    "phAnomaly": "Quality parameter anomaly detected. Further laboratory authenticity testing is recommended."
+  }
+}

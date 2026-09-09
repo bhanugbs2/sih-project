@@ -1,0 +1,351 @@
+{
+	"info": {
+		"_postman_id": "a82f7e34-honeychain-phase2-collection",
+		"name": "HoneyChain Phase 2 API Collection",
+		"description": "Complete Postman collection for HoneyChain Phase 2 REST APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/health",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "health"]
+				}
+			}
+		},
+		{
+			"name": "2. Create Farm",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"farmId\": \"farm-001\",\n  \"name\": \"Green Valley Apiary\",\n  \"ownerName\": \"Demo Beekeeper\",\n  \"location\": \"Demo Location\",\n  \"latitude\": 20.5937,\n  \"longitude\": 78.9629\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/farms",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "farms"]
+				}
+			}
+		},
+		{
+			"name": "3. Get All Farms",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/farms",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "farms"]
+				}
+			}
+		},
+		{
+			"name": "4. Get Farm by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/farms/farm-001",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "farms", "farm-001"]
+				}
+			}
+		},
+		{
+			"name": "5. Create Hive",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"hiveId\": \"hive-001\",\n  \"farmId\": \"farm-001\",\n  \"name\": \"Hive 001\",\n  \"location\": \"North Field\",\n  \"latitude\": 20.5937,\n  \"longitude\": 78.9629,\n  \"status\": \"ACTIVE\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/hives",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "hives"]
+				}
+			}
+		},
+		{
+			"name": "6. Get Hives",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/hives?farmId=farm-001",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "hives"],
+					"query": [
+						{
+							"key": "farmId",
+							"value": "farm-001"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "7. Get Hive by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/hives/hive-001",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "hives", "hive-001"]
+				}
+			}
+		},
+		{
+			"name": "8. Create Sensor Reading",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"hiveId\": \"hive-001\",\n  \"temperature\": 27.4,\n  \"humidity\": 61.2,\n  \"weight\": 2047.0,\n  \"soundLevel\": 43.5,\n  \"latitude\": 20.5937,\n  \"longitude\": 78.9629,\n  \"timestamp\": 1700000000\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/sensors",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "sensors"]
+				}
+			}
+		},
+		{
+			"name": "9. Get Latest Sensor Reading",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/hives/hive-001/latest",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "hives", "hive-001", "latest"]
+				}
+			}
+		},
+		{
+			"name": "10. Get Hive History",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/hives/hive-001/history?limit=10",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "hives", "hive-001", "history"],
+					"query": [
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "11. Get AI Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/hives/hive-001/ai-status",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "hives", "hive-001", "ai-status"]
+				}
+			}
+		},
+		{
+			"name": "12. Create Batch",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"batchId\": \"BATCH-001\",\n  \"hiveId\": \"hive-001\",\n  \"harvestDate\": \"2026-09-07\",\n  \"quantity\": 25.5,\n  \"unit\": \"KG\",\n  \"status\": \"HARVESTED\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/batches",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "batches"]
+				}
+			}
+		},
+		{
+			"name": "13. Get Batch by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/batches/BATCH-001",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "batches", "BATCH-001"]
+				}
+			}
+		},
+		{
+			"name": "14. Add Quality Test",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"moisture\": 17.5,\n  \"pH\": 4.2,\n  \"color\": \"Amber\",\n  \"result\": \"PASS\",\n  \"verifiedBy\": \"Quality Inspector\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/batches/BATCH-001/quality-test",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "batches", "BATCH-001", "quality-test"]
+				}
+			}
+		},
+		{
+			"name": "15. Add Processing Record",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"processType\": \"FILTERING\",\n  \"description\": \"Honey filtered before packaging\",\n  \"verifiedBy\": \"Processing Operator\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/batches/BATCH-001/processing",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "batches", "BATCH-001", "processing"]
+				}
+			}
+		},
+		{
+			"name": "16. Create Package",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"packageId\": \"PKG-001\",\n  \"batchId\": \"BATCH-001\",\n  \"packagingDate\": \"2026-09-07\",\n  \"status\": \"PACKAGED\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/packages",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "packages"]
+				}
+			}
+		},
+		{
+			"name": "17. Get Package by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/packages/PKG-001",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "packages", "PKG-001"]
+				}
+			}
+		},
+		{
+			"name": "18. Get Batch Traceability",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/batches/BATCH-001/traceability",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "batches", "BATCH-001", "traceability"]
+				}
+			}
+		},
+		{
+			"name": "19. Verify Package (Customer QR)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/verify/PKG-001",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "verify", "PKG-001"]
+				}
+			}
+		}
+	]
+}

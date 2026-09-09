@@ -16,3 +16,8 @@ logging:
   level:
     root: INFO
     com.nexora.honeychain: DEBUG
+
+jwt:
+  secret: HoneyChainSecretKeyForJwtSigningMustBeAtLeast256BitsLongForHS256Algorithm!
+  expiration: 86400
+

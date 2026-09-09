@@ -1,10 +1,15 @@
 import React from 'react';
 import { MainLayout } from '../components/layout/MainLayout';
-import { Link2, ShieldCheck, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { PageHeader } from '../components/common/UIComponents';
+import { Link2, ExternalLink, CheckCircle2 } from 'lucide-react';
 
 export const BlockchainPage: React.FC = () => {
   return (
-    <MainLayout title="Blockchain Ledger Audit" subtitle="Immutable Batch Anchors, Merkle Root Hashes & Contract State">
+    <MainLayout>
+      <PageHeader
+        title="Blockchain Ledger Audit"
+        subtitle="Immutable Batch Anchors, Merkle Root Hashes & Contract State"
+      />
       <div className="glass-panel" style={{ padding: '1.5rem' }}>
         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Link2 size={20} style={{ color: 'var(--accent-violet)' }} /> Smart Contract State & Anchors
@@ -27,3 +32,4 @@ export const BlockchainPage: React.FC = () => {
     </MainLayout>
   );
 };
+

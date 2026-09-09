@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface HiveRepository extends JpaRepository<Hive, String> {
     Optional<Hive> findByHiveId(String hiveId);
+    boolean existsByHiveId(String hiveId);
     List<Hive> findByFarmFarmId(String farmId);
 }

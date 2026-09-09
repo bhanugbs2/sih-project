@@ -21,6 +21,24 @@ public class ProcessingRecord {
     @Column(name = "process_type", nullable = false)
     private String processType;
 
+    @Column(name = "operation")
+    private String operation;
+
+    @Column(name = "operator")
+    private String operator;
+
+    @Column(name = "started_at")
+    private Instant startedAt;
+
+    @Column(name = "completed_at")
+    private Instant completedAt;
+
+    @Column(name = "processing_temperature")
+    private Double processingTemperature;
+
+    @Column(name = "temp_source")
+    private String tempSource = "Manual Processing Temperature";
+
     @Column(name = "description", length = 1000)
     private String description;
 
@@ -42,6 +60,21 @@ public class ProcessingRecord {
         if (this.timestamp == null) {
             this.timestamp = Instant.now();
         }
+        if (this.startedAt == null) {
+            this.startedAt = this.timestamp;
+        }
+        if (this.completedAt == null) {
+            this.completedAt = this.timestamp;
+        }
+        if (this.operation == null) {
+            this.operation = this.processType;
+        }
+        if (this.operator == null) {
+            this.operator = this.verifiedBy;
+        }
+        if (this.tempSource == null) {
+            this.tempSource = "Manual Processing Temperature";
+        }
         this.createdAt = Instant.now();
     }
 
@@ -50,9 +83,28 @@ public class ProcessingRecord {
     public ProcessingRecord(HoneyBatch batch, String processType, String description, Instant timestamp, String verifiedBy) {
         this.batch = batch;
         this.processType = processType;
+        this.operation = processType;
         this.description = description;
         this.timestamp = timestamp;
+        this.startedAt = timestamp;
+        this.completedAt = timestamp;
         this.verifiedBy = verifiedBy;
+        this.operator = verifiedBy;
+        this.tempSource = "Manual Processing Temperature";
+    }
+
+    public ProcessingRecord(HoneyBatch batch, String operation, String operator, Instant startedAt, Instant completedAt, Double processingTemperature, String description) {
+        this.batch = batch;
+        this.processType = operation;
+        this.operation = operation;
+        this.operator = operator;
+        this.verifiedBy = operator;
+        this.startedAt = startedAt;
+        this.completedAt = completedAt;
+        this.processingTemperature = processingTemperature;
+        this.description = description;
+        this.timestamp = completedAt != null ? completedAt : Instant.now();
+        this.tempSource = "Manual Processing Temperature";
     }
 
     public String getId() { return id; }
@@ -64,14 +116,41 @@ public class ProcessingRecord {
     public String getProcessType() { return processType; }
     public void setProcessType(String processType) { this.processType = processType; }
 
+    public String getOperation() { return operation != null ? operation : processType; }
+    public void setOperation(String operation) {
+        this.operation = operation;
+        this.processType = operation;
+    }
+
+    public String getOperator() { return operator != null ? operator : verifiedBy; }
+    public void setOperator(String operator) {
+        this.operator = operator;
+        this.verifiedBy = operator;
+    }
+
+    public Instant getStartedAt() { return startedAt != null ? startedAt : timestamp; }
+    public void setStartedAt(Instant startedAt) { this.startedAt = startedAt; }
+
+    public Instant getCompletedAt() { return completedAt != null ? completedAt : timestamp; }
+    public void setCompletedAt(Instant completedAt) { this.completedAt = completedAt; }
+
+    public Double getProcessingTemperature() { return processingTemperature; }
+    public void setProcessingTemperature(Double processingTemperature) { this.processingTemperature = processingTemperature; }
+
+    public String getTempSource() { return tempSource; }
+    public void setTempSource(String tempSource) { this.tempSource = tempSource; }
+
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
     public Instant getTimestamp() { return timestamp; }
     public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
 
-    public String getVerifiedBy() { return verifiedBy; }
-    public void setVerifiedBy(String verifiedBy) { this.verifiedBy = verifiedBy; }
+    public String getVerifiedBy() { return verifiedBy != null ? verifiedBy : operator; }
+    public void setVerifiedBy(String verifiedBy) {
+        this.verifiedBy = verifiedBy;
+        this.operator = verifiedBy;
+    }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

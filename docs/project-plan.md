@@ -10,79 +10,73 @@
 
 HoneyChain is an end-to-end smart beekeeping management and tamper-proof honey traceability system. The primary objectives are:
 
-1. **Smart Beekeeping Management**: Monitor hive health and environmental metrics using IoT sensors deployed on hives.
-2. **AI Decision Support**: Provide automated anomaly detection and quality indicators to assist beekeepers (*e.g., "Abnormal hive pattern detected. Beekeeper inspection recommended."*).
-3. **Immutable Honey Traceability**: Ensure 100% adulteration-free, verifiable honey batches anchored on a blockchain layer.
-4. **Consumer Transparency**: Enable consumers to scan QR codes on honey jars to view full harvest-to-table lineage, lab quality scores, and cryptographic blockchain proofs.
+1. **Smart Beekeeping Management**: Monitor hive health and environmental metrics using physical IoT nodes (ESP32, DHT22 temperature & humidity, SSD1306 OLED display).
+2. **AI-Assisted Screening & Decision Support**: Provide automated anomaly detection and quality indicators to assist beekeepers (*e.g., "Abnormal hive pattern detected. Beekeeper inspection recommended."*).
+3. **Traceability & Off-Chain Verification**: Ensure transparent, verifiable honey batches backed by off-chain cryptographic hash generation and auditing.
+4. **Consumer Transparency**: Enable consumers to scan programmatic QR codes on honey jars to view full harvest-to-table lineage, lab quality screening scores, and verification proofs.
 
 ---
 
-## 2. Technology Stack Matrix
+## 2. Technology Stack Matrix & Architecture Status
 
-| Layer | Primary Technology | Description / Details |
+| Layer | Currently Implemented Technology | Future Extensions / Roadmap |
 |---|---|---|
-| **Backend** | Java 21 / Spring Boot 3.3.x | REST API, Spring Data JPA, Spring Validation, Actuator |
-| **Database** | PostgreSQL | Off-chain telemetry, batch records, user management |
-| **Migrations** | Flyway | Versioned database schema migrations (`V1__init_schema.sql`) |
-| **Frontend** | React 18 / TypeScript / Vite | Responsive SPA, Vanilla CSS Glassmorphic design system |
-| **AI / ML** | Tribuo (with Weka / Smile fallbacks) | Java-compatible ML engine for honey purity & anomaly detection |
-| **IoT Node** | ESP32 Microcontroller | ESP32, DHT22 (Temp/Humidity), OLED SSD1306, simulated Load Cell/HX711, Mic, GPS |
-| **Blockchain** | Local EVM / Abstraction Layer | Smart contracts (`HoneyTraceability.sol`), Merkle root batch anchoring |
+| **Backend** | Java 21 / Spring Boot 3.3.x (JPA, Validation, Actuator) | Microservice decomposition |
+| **Database** | PostgreSQL + Flyway Migrations (`V1__init_schema.sql` through `V4__phase7_workflow.sql`) | Distributed database clustering |
+| **Frontend** | React 18 / TypeScript / Vite (Vanilla CSS Glassmorphic design) | Offline PWA sync |
+| **IoT Hardware** | **ESP32 Microcontroller, DHT22 (Temp/Humidity), SSD1306 OLED** | **HX711 Load Cell, Microphone, GPS Module** |
+| **AI / ML Engine** | **Rule-Based AI-Assisted Screening & Decision Support** | **DJL / ONNX Neural Networks / Time-Series ML** |
+| **Blockchain** | **Off-Chain Cryptographic Hashing & Traceability Logs** | **Phase 8 EVM Smart Contract Anchoring** |
 
 ---
 
 ## 3. Development Phase Roadmap
 
-### Phase 0 — Project Foundation & Environment Verification (Current)
+### Phase 0 — Project Foundation & Environment Verification
 - Monorepo directory setup (`/backend`, `/frontend`, `/iot`, `/blockchain`, `/ai`, `/docs`).
-- Environment tools validation (Java 26/21, Node.js v22, npm 10, Git).
+- Environment tools validation (Java 21, Node.js v22, npm 10, Git).
 - Architecture document & project plan with Mermaid diagrams.
-- Base build configuration for backend & frontend.
 
 ### Phase 1 — Backend & Frontend Core Monorepo Setup
 - Spring Boot REST controllers (`SystemStatusController`), Spring Data JPA, PostgreSQL Flyway migrations.
 - React SPA shell with responsive sidebar, header, glassmorphic layout, and 9 routes (`/login`, `/dashboard`, `/hives`, `/batches`, `/quality`, `/processing`, `/packages`, `/blockchain`, `/verify`).
 
-### Phase 2 — IoT Telemetry & Sensor Provider Layer
-- ESP32 firmware C++/Arduino sketch for physical sensors (DHT22, OLED SSD1306).
-- Simulated sensor providers for physical hardware currently unavailable (Load Cell + HX711 weight, Microphone acoustics, GPS coordinates).
+### Phase 2 — IoT Telemetry & Sensor Integration
+- ESP32 firmware C++/Arduino sketch for installed physical sensors (DHT22 Temp & Humidity, SSD1306 OLED display).
+- Nullable schema fields for deferred hardware (Load Cell weight, Microphone acoustics, GPS coordinates).
 
-### Phase 3 — AI/ML Decision Support Engine
-- Integration of Tribuo / Weka Java ML library.
-- Honey quality index calculation and anomaly alerts.
-- Scientific wording enforcement (*"Abnormal hive pattern detected. Beekeeper inspection recommended."*).
+### Phase 3 — Authentication, Security & Role-Based Control
+- Spring Security JWT filter, BCrypt password hashing, pre-seeded role permissions (`ADMIN`, `BEEKEEPER`, `QUALITY_INSPECTOR`).
 
-### Phase 4 — Blockchain Traceability & QR Serialization
-- Local blockchain abstraction layer & smart contract deployment (`HoneyTraceability.sol`).
-- Off-chain vs On-chain data segregation (Telemetry off-chain in Postgres; Merkle roots on-chain).
-- Programmatic QR code generation for jar packages.
+### Phase 4 — React Dashboard & Interactive System Portals
+- Real-time IoT monitoring workspace with live/stale status indicators, Recharts visual analytics, batch lifecycle management, quality testing, processing logs, and verification portals.
 
-### Phase 5 — Full System Integration & End-to-End Testing
-- Full lifecycle integration: Hive IoT -> Sensor Data -> AI Alert -> Harvest Batch -> Quality Test -> Processing -> Package QR -> Blockchain Anchor -> Consumer Verification.
-- Automated end-to-end integration tests & performance validation.
+### Phase 5 — ESP32 Hardware Integration & M2M Telemetry Security
+- Machine-to-machine `X-IoT-API-Key` authentication header, 5-second live telemetry ingestion from physical ESP32 node.
+
+### Phase 6 — AI-Assisted Screening & Anomaly Decision Support
+- Rule-based quality screening (`PURE`, `SUSPECTED_MOISTURE_DILUTION`, `QUALITY_PARAMETER_ANOMALY`) and swarm anomaly alerts.
+
+### Phase 7 — Honey Harvest, Quality Testing & Processing Workflow (Completed)
+- Complete off-chain production lifecycle: `HARVEST` → `HONEY BATCH` → `QUALITY TESTING` → `AI-ASSISTED SCREENING` → `PROCESSING` → `READY FOR PACKAGING`.
+- Quality gates blocking failed/review batches from processing, manual quantity and temperature labeling, dual quality + AI cards on batch details, and 6-stage off-chain traceability timeline.
 
 ---
 
-## 4. Major Features & Architecture Principles
+## 4. Major Architectural Principles
 
 1. **Off-Chain vs On-Chain Segregation**:
-   - Detailed sensor readings remain stored off-chain in PostgreSQL to maintain low gas costs and scalable performance.
-   - Only critical traceability events (harvest date, floral source, lab purity score, Merkle root hash) are committed on-chain.
-2. **Decision Support AI**:
-   - AI predictions are framed as decision support for beekeepers rather than definitive medical or diagnostic claims.
+   - Detailed sensor telemetry, user accounts, batches, quality tests, processing records, and packages remain stored off-chain in PostgreSQL.
+   - Cryptographic hashes and verification proofs are generated off-chain, designated for Phase 8 on-chain blockchain anchoring.
+2. **AI-Assisted Decision Support**:
+   - AI predictions are framed as decision support for beekeepers (*"Abnormal hive pattern detected. Beekeeper inspection recommended."*) rather than absolute diagnostic or medical claims.
+3. **Manual Harvest Quantity**:
+   - Harvest weight/quantity is recorded as "Manual Harvest Quantity" entered by the beekeeper. The current ESP32 node does not measure honey weight.
 
 ---
 
 ## 5. Testing & Verification Strategy
 
 - **Backend**: JUnit 5, Spring Boot Test, Maven build verification (`mvn clean compile`).
-- **Frontend**: TypeScript type check (`tsc --noEmit`), Vite production bundler check (`npm run build`).
-- **Integration**: REST API response verification, Flyway schema validation, and component rendering checks.
-
----
-
-## 6. Deployment Strategy
-
-- **Backend**: Containerized Docker image running Spring Boot on Java 21 Runtime Environment.
-- **Frontend**: Static SPA hosted on Vite / Nginx web server or cloud CDN.
-- **Database**: Managed PostgreSQL instance with Flyway auto-migration on boot.
+- **Frontend**: TypeScript type check (`tsc -b`), Vite production bundler check (`npm run build`).
+- **Integration**: REST API response verification, Flyway schema validation, component rendering checks, and `Phase7WorkflowIntegrationTest.java`.

@@ -21,6 +21,12 @@ public class QualityTest {
     private Double pH;
     private String color;
 
+    @Column(name = "notes", length = 1000)
+    private String notes;
+
+    @Column(name = "tested_at")
+    private Instant testedAt;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "result", nullable = false)
@@ -44,6 +50,9 @@ public class QualityTest {
         if (this.timestamp == null) {
             this.timestamp = Instant.now();
         }
+        if (this.testedAt == null) {
+            this.testedAt = this.timestamp;
+        }
         this.createdAt = Instant.now();
     }
 
@@ -57,6 +66,19 @@ public class QualityTest {
         this.result = result != null ? result : QualityTestResult.PENDING;
         this.verifiedBy = verifiedBy;
         this.timestamp = timestamp;
+        this.testedAt = timestamp;
+    }
+
+    public QualityTest(HoneyBatch batch, Double moisture, Double pH, String color, String notes, QualityTestResult result, String verifiedBy, Instant timestamp) {
+        this.batch = batch;
+        this.moisture = moisture;
+        this.pH = pH;
+        this.color = color;
+        this.notes = notes;
+        this.result = result != null ? result : QualityTestResult.PENDING;
+        this.verifiedBy = verifiedBy;
+        this.timestamp = timestamp;
+        this.testedAt = timestamp;
     }
 
     public String getId() { return id; }
@@ -73,6 +95,12 @@ public class QualityTest {
 
     public String getColor() { return color; }
     public void setColor(String color) { this.color = color; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public Instant getTestedAt() { return testedAt != null ? testedAt : timestamp; }
+    public void setTestedAt(Instant testedAt) { this.testedAt = testedAt; }
 
     public QualityTestResult getResult() { return result; }
     public void setResult(QualityTestResult result) { this.result = result; }
