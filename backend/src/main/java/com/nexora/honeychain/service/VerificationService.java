@@ -64,11 +64,23 @@ public class VerificationService {
                 .map(DtoMapper::toTraceabilityEventResponse)
                 .collect(Collectors.toList());
 
-        if (traceabilityEvents.isEmpty() && batch != null) {
-            traceabilityEvents = traceabilityEventRepository
+        if (batch != null) {
+            List<TraceabilityEventResponse> batchEvents = traceabilityEventRepository
                     .findByBatchBatchIdOrderByTimestampAsc(batch.getBatchId()).stream()
                     .map(DtoMapper::toTraceabilityEventResponse)
+                    .filter(bEvt -> traceabilityEvents.stream().noneMatch(pEvt -> pEvt.getId().equals(bEvt.getId())))
                     .collect(Collectors.toList());
+            traceabilityEvents.addAll(batchEvents);
+            traceabilityEvents.sort(java.util.Comparator.comparing(TraceabilityEventResponse::getTimestamp));
+        }
+
+        String verificationStatus = "PENDING";
+        if (traceabilityEvents != null && !traceabilityEvents.isEmpty()) {
+            boolean anyAnchored = traceabilityEvents.stream()
+                    .anyMatch(e -> e.getBlockchainStatus() != null && "BLOCKCHAIN_ANCHORED".equalsIgnoreCase(e.getBlockchainStatus().name()));
+            if (anyAnchored) {
+                verificationStatus = "VERIFIED";
+            }
         }
 
         return new CustomerVerificationResponse(
@@ -79,7 +91,7 @@ public class VerificationService {
                 qualityTests,
                 processingRecords,
                 traceabilityEvents,
-                "PENDING"
+                verificationStatus
         );
     }
 }

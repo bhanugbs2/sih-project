@@ -161,6 +161,26 @@ export const getAllAIAlerts = async (): Promise<AIAlert[]> => {
   return response.data;
 };
 
+export const getUnreadAlerts = async (): Promise<AIAlert[]> => {
+  const response = await apiClient.get<AIAlert[]>('/api/ai/alerts/unread');
+  return response.data;
+};
+
+export const getUnreadAlertCount = async (): Promise<number> => {
+  const response = await apiClient.get<{ count: number }>('/api/ai/alerts/unread/count');
+  return response.data.count;
+};
+
+export const markAlertRead = async (id: string): Promise<AIAlert> => {
+  const response = await apiClient.patch<AIAlert>(`/api/ai/alerts/${id}/read`);
+  return response.data;
+};
+
+export const acknowledgeAlert = async (id: string): Promise<AIAlert> => {
+  const response = await apiClient.patch<AIAlert>(`/api/ai/alerts/${id}/acknowledge`);
+  return response.data;
+};
+
 export const evaluateHoneyQuality = async (data: QualityEvaluationRequest): Promise<QualityEvaluationResponse> => {
   const response = await apiClient.post<QualityEvaluationResponse>('/api/ai/evaluate-quality', data);
   return response.data;

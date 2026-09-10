@@ -43,6 +43,30 @@ public class AIAlert {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(name = "is_read", nullable = false)
+    private boolean isRead = false;
+
+    @Column(name = "read_at")
+    private Instant readAt;
+
+    @Column(name = "is_acknowledged", nullable = false)
+    private boolean isAcknowledged = false;
+
+    @Column(name = "acknowledged_at")
+    private Instant acknowledgedAt;
+
+    @Column(name = "acknowledged_by", length = 100)
+    private String acknowledgedBy;
+
+    @Column(name = "alert_type", nullable = false, length = 50)
+    private String alertType = "TELEMETRY_ANOMALY";
+
+    @Column(name = "model_version", length = 50)
+    private String modelVersion = "honeychain-anomaly-v1";
+
+    @Column(name = "batch_id", length = 60)
+    private String batchId;
+
     @PrePersist
     protected void onCreate() {
         if (this.id == null) {
@@ -50,6 +74,12 @@ public class AIAlert {
         }
         if (this.timestamp == null) {
             this.timestamp = Instant.now();
+        }
+        if (this.alertType == null) {
+            this.alertType = "TELEMETRY_ANOMALY";
+        }
+        if (this.modelVersion == null) {
+            this.modelVersion = "honeychain-anomaly-v1";
         }
         this.createdAt = Instant.now();
     }
@@ -63,6 +93,17 @@ public class AIAlert {
         this.message = message;
         this.factors = factors;
         this.timestamp = timestamp;
+    }
+
+    public AIAlert(Hive hive, Double riskScore, AIAlertStatus status, String message, String factors, Instant timestamp, String alertType, String modelVersion) {
+        this.hive = hive;
+        this.riskScore = riskScore;
+        this.status = status;
+        this.message = message;
+        this.factors = factors;
+        this.timestamp = timestamp;
+        if (alertType != null) this.alertType = alertType;
+        if (modelVersion != null) this.modelVersion = modelVersion;
     }
 
     public String getId() { return id; }
@@ -88,4 +129,28 @@ public class AIAlert {
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+    public boolean isRead() { return isRead; }
+    public void setRead(boolean read) { isRead = read; }
+
+    public Instant getReadAt() { return readAt; }
+    public void setReadAt(Instant readAt) { this.readAt = readAt; }
+
+    public boolean isAcknowledged() { return isAcknowledged; }
+    public void setAcknowledged(boolean acknowledged) { isAcknowledged = acknowledged; }
+
+    public Instant getAcknowledgedAt() { return acknowledgedAt; }
+    public void setAcknowledgedAt(Instant acknowledgedAt) { this.acknowledgedAt = acknowledgedAt; }
+
+    public String getAcknowledgedBy() { return acknowledgedBy; }
+    public void setAcknowledgedBy(String acknowledgedBy) { this.acknowledgedBy = acknowledgedBy; }
+
+    public String getAlertType() { return alertType; }
+    public void setAlertType(String alertType) { this.alertType = alertType; }
+
+    public String getModelVersion() { return modelVersion; }
+    public void setModelVersion(String modelVersion) { this.modelVersion = modelVersion; }
+
+    public String getBatchId() { return batchId; }
+    public void setBatchId(String batchId) { this.batchId = batchId; }
 }

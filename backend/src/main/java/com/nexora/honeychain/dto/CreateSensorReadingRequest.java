@@ -11,6 +11,8 @@ public class CreateSensorReadingRequest {
     @NotBlank(message = "hiveId is required")
     private String hiveId;
 
+    @DecimalMin(value = "-40.0", message = "Temperature must be >= -40°C")
+    @DecimalMax(value = "80.0", message = "Temperature must be <= 80°C")
     private Double temperature;
 
     @DecimalMin(value = "0.0", message = "Humidity must be >= 0")

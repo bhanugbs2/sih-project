@@ -60,6 +60,12 @@ public class BlockchainController {
         return ResponseEntity.ok(traceabilityService.getTraceabilityByBatchId(batchId));
     }
 
+    @GetMapping("/verify/{eventId}")
+    @Operation(summary = "Verify Traceability Event Data Hash Integrity", description = "Reconstructs canonical event data and verifies expected SHA-256 hash against stored data hash (MATCH vs MISMATCH)")
+    public ResponseEntity<Map<String, Object>> verifyEventHash(@PathVariable String eventId) {
+        return ResponseEntity.ok(blockchainService.verifyEventDataIntegrity(eventId));
+    }
+
     @GetMapping("/status")
     @Operation(summary = "Get Blockchain Node Configuration Status", description = "Returns active EVM RPC configuration status and contract address details")
     public ResponseEntity<Map<String, Object>> getBlockchainConfigurationStatus() {

@@ -112,6 +112,14 @@ export interface AIAlert {
   factors?: string;
   timestamp: string;
   createdAt?: string;
+  isRead?: boolean;
+  readAt?: string | null;
+  isAcknowledged?: boolean;
+  acknowledgedAt?: string | null;
+  acknowledgedBy?: string | null;
+  alertType?: string;
+  modelVersion?: string;
+  batchId?: string | null;
 }
 
 export interface AIStatusResponse {
@@ -120,6 +128,9 @@ export interface AIStatusResponse {
   status: AIAlertStatus;
   message: string;
   lastAnalysisTimestamp: string;
+  modelVersion?: string;
+  screeningMethod?: string;
+  confidenceScore?: number;
 }
 
 export interface QualityEvaluationRequest {
@@ -135,6 +146,9 @@ export interface QualityEvaluationResponse {
   adulterationClass: string;
   recommendation: string;
   riskFactors: string[];
+  modelVersion?: string;
+  screeningMethod?: string;
+  confidenceScore?: number;
 }
 
 export interface TelemetryAnalysisRequest {
@@ -150,6 +164,9 @@ export interface TelemetryAnalysisResponse {
   alertStatus: AIAlertStatus;
   message: string;
   anomalyFactors: string[];
+  modelVersion?: string;
+  screeningMethod?: string;
+  confidenceScore?: number;
 }
 
 export type HoneyBatchStatus = 'HARVESTED' | 'QUALITY_TESTING' | 'QUALITY_TESTED' | 'QUALITY_VERIFIED' | 'PROCESSING' | 'PROCESSED' | 'READY_FOR_PACKAGING' | 'REQUIRES_REVIEW' | 'PACKAGED' | 'COMPLETED' | 'RECALLED';

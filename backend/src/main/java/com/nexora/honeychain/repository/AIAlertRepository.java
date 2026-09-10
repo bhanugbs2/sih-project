@@ -13,5 +13,8 @@ public interface AIAlertRepository extends JpaRepository<AIAlert, String> {
     List<AIAlert> findByHiveHiveIdOrderByTimestampDesc(String hiveId);
     List<AIAlert> findByHiveHiveIdOrderByTimestampDesc(String hiveId, Pageable pageable);
     Optional<AIAlert> findFirstByHiveHiveIdOrderByTimestampDesc(String hiveId);
+    Optional<AIAlert> findFirstByHiveHiveIdAndStatusOrderByTimestampDesc(String hiveId, com.nexora.honeychain.model.enums.AIAlertStatus status);
     List<AIAlert> findAllByOrderByTimestampDesc();
+    List<AIAlert> findByIsReadFalseOrderByTimestampDesc();
+    long countByIsReadFalse();
 }

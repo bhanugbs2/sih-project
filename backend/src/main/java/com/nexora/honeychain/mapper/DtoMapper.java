@@ -103,7 +103,15 @@ public class DtoMapper {
                 alert.getMessage(),
                 alert.getFactors(),
                 alert.getTimestamp(),
-                alert.getCreatedAt()
+                alert.getCreatedAt(),
+                alert.isRead(),
+                alert.getReadAt(),
+                alert.isAcknowledged(),
+                alert.getAcknowledgedAt(),
+                alert.getAcknowledgedBy(),
+                alert.getAlertType(),
+                alert.getModelVersion(),
+                alert.getBatchId()
         );
     }
 

@@ -24,6 +24,15 @@ honeychain:
     sih-id: SIH26021
     team: Nexora
     version: 1.0.0-phase3
+  iot:
+    api-key: ${IOT_API_KEY:HoneyChain-IoT-Device-Key-2026}
+  blockchain:
+    enabled: ${BLOCKCHAIN_ENABLED:false}
+    rpc-url: ${BLOCKCHAIN_RPC_URL:http://127.0.0.1:8545}
+    private-key: ${BLOCKCHAIN_PRIVATE_KEY:}
+    contract-address: ${BLOCKCHAIN_CONTRACT_ADDRESS:}
+    chain-id: ${BLOCKCHAIN_CHAIN_ID:31337}
+    network-name: ${BLOCKCHAIN_NETWORK_NAME:Localhost EVM}
 
 jwt:
   secret: ${JWT_SECRET:HoneyChainSecretKeyForJwtSigningMustBeAtLeast256BitsLongForHS256Algorithm!}

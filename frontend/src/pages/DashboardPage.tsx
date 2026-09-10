@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '../components/layout/MainLayout';
 import { PageHeader, MetricCard, LoadingState, ErrorState, StatusBadge } from '../components/common/UIComponents';
-import { getAllFarms, getAllHives, getAllBatches, getHiveAlerts, getSystemStatus } from '../services/api';
+import { getAllFarms, getAllHives, getAllBatches, getAllAIAlerts, getUnreadAlertCount, getSystemStatus, markAlertRead, acknowledgeAlert } from '../services/api';
 import { Farm, Hive, HoneyBatch, AIAlert, SystemStatus as SystemStatusType } from '../types';
-import { Building2, Boxes, PackageCheck, AlertOctagon, Activity, ShieldCheck, ArrowUpRight, Cpu } from 'lucide-react';
+import { Building2, Boxes, PackageCheck, AlertOctagon, Activity, ShieldCheck, ArrowUpRight, Cpu, RefreshCw, CheckCircle2, ShieldAlert } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -13,41 +13,74 @@ export const DashboardPage: React.FC = () => {
   const [hives, setHives] = useState<Hive[]>([]);
   const [batches, setBatches] = useState<HoneyBatch[]>([]);
   const [alerts, setAlerts] = useState<AIAlert[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
   const [systemStatus, setSystemStatus] = useState<SystemStatusType | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [secondsAgo, setSecondsAgo] = useState(0);
 
-  const loadDashboardData = async () => {
-    setLoading(true);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const secondsTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const loadDashboardData = async (isBackground = false) => {
+    if (!isBackground) setLoading(true);
     setError(null);
     try {
-      const [farmsData, hivesData, batchesData, statusData] = await Promise.all([
+      const [farmsData, hivesData, batchesData, alertsData, countData, statusData] = await Promise.all([
         getAllFarms().catch(() => []),
         getAllHives().catch(() => []),
         getAllBatches().catch(() => []),
+        getAllAIAlerts().catch(() => []),
+        getUnreadAlertCount().catch(() => 0),
         getSystemStatus().catch(() => null),
       ]);
 
       setFarms(farmsData);
       setHives(hivesData);
       setBatches(batchesData);
+      setAlerts(alertsData);
+      setUnreadCount(countData);
       setSystemStatus(statusData);
-
-      if (hivesData.length > 0) {
-        const alertsData = await getHiveAlerts(hivesData[0].hiveId, 5).catch(() => []);
-        setAlerts(alertsData);
-      }
+      setSecondsAgo(0);
     } catch (err: any) {
-      setError(err.message || 'Failed to load dashboard statistics.');
+      if (!isBackground) {
+        setError(err.message || 'Failed to load dashboard statistics.');
+      }
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadDashboardData();
+    loadDashboardData(false);
+
+    // Auto-refresh polling loop every 15 seconds
+    timerRef.current = setInterval(() => {
+      loadDashboardData(true);
+    }, 15000);
+
+    // Second tick for "Updated X seconds ago"
+    secondsTimerRef.current = setInterval(() => {
+      setSecondsAgo((prev) => prev + 1);
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (secondsTimerRef.current) clearInterval(secondsTimerRef.current);
+    };
   }, []);
+
+  const handleAcknowledge = async (alertId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const updated = await acknowledgeAlert(alertId);
+      setAlerts((prev) => prev.map((a) => (a.id === alertId ? updated : a)));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error('Failed to acknowledge alert:', err);
+    }
+  };
 
   const activeHivesCount = hives.filter((h) => h.status === 'ACTIVE').length;
   const packagedBatchesCount = batches.filter((b) => b.status === 'PACKAGED' || b.status === 'COMPLETED').length;
@@ -58,16 +91,22 @@ export const DashboardPage: React.FC = () => {
         title="HoneyChain Dashboard"
         subtitle="Real-time smart beekeeping telemetry & supply chain traceability overview"
         actions={
-          <button className="btn-primary" onClick={() => navigate('/hives')}>
-            <Boxes size={18} /> View All Hives
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              <RefreshCw size={13} className="pulsing-icon" />
+              <span>Auto-refreshing (Updated {secondsAgo}s ago)</span>
+            </div>
+            <button className="btn-primary" onClick={() => navigate('/hives')}>
+              <Boxes size={18} /> View All Hives
+            </button>
+          </div>
         }
       />
 
       {loading ? (
         <LoadingState message="Fetching live backend analytics..." />
       ) : error ? (
-        <ErrorState message={error} onRetry={loadDashboardData} />
+        <ErrorState message={error} onRetry={() => loadDashboardData(false)} />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           {/* Summary Metric Cards */}
@@ -96,9 +135,9 @@ export const DashboardPage: React.FC = () => {
             <MetricCard
               title="AI Health Alerts"
               value={alerts.length}
-              subtext={alerts.length > 0 ? `${alerts[0].status} Severity` : 'Optimal State'}
+              subtext={unreadCount > 0 ? `${unreadCount} Unread Action Required` : 'All Alerts Handled'}
               icon={AlertOctagon}
-              color="var(--accent-violet)"
+              color={unreadCount > 0 ? 'var(--accent-rose)' : 'var(--accent-violet)'}
             />
           </div>
 
@@ -142,6 +181,76 @@ export const DashboardPage: React.FC = () => {
                 View complete cryptographic event logs and blockchain anchor references.
               </p>
             </div>
+          </div>
+
+          {/* Recent AI Alerts Overview */}
+          <div className="glass-panel" style={{ padding: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+                  Recent AI Alerts ({unreadCount} Unread)
+                </h3>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Automated anomaly screening & environmental drift alerts</span>
+              </div>
+              <button className="btn-secondary" onClick={() => navigate('/alerts')} style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem' }}>
+                View All Alerts ({alerts.length})
+              </button>
+            </div>
+
+            {alerts.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic', margin: 0 }}>
+                No active anomaly alerts. All apiaries operating within standard environmental screening thresholds.
+              </p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {alerts.slice(0, 3).map((alert) => (
+                  <div
+                    key={alert.id}
+                    style={{
+                      padding: '1rem',
+                      borderRadius: 'var(--radius-md)',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid var(--border-color)',
+                      borderLeft: `4px solid ${alert.status === 'CRITICAL' ? '#f43f5e' : alert.status === 'WARNING' ? '#f59e0b' : '#10b981'}`,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <ShieldAlert size={18} style={{ color: alert.status === 'CRITICAL' ? '#f43f5e' : '#f59e0b' }} />
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                          Hive: {alert.hiveId} &mdash; <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{alert.message}</span>
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                          Risk: {alert.riskScore}% | Recorded: {new Date(alert.timestamp).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <StatusBadge status={alert.status} />
+                      {alert.isAcknowledged ? (
+                        <span style={{ fontSize: '0.75rem', color: 'var(--accent-emerald)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <CheckCircle2 size={13} /> Acknowledged
+                        </span>
+                      ) : (
+                        <button
+                          className="btn-secondary"
+                          onClick={(e) => handleAcknowledge(alert.id, e)}
+                          style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+                        >
+                          Acknowledge
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Recent Hives Table Overview */}

@@ -160,13 +160,13 @@ export const VerifyPage: React.FC = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                   <span className="badge badge-success" style={{ fontSize: '0.85rem', padding: '0.4rem 0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <CheckCircle2 size={16} /> VERIFIED AUTHENTIC HONEY
+                    <CheckCircle2 size={16} /> Blockchain Record Verified
                   </span>
                   <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginTop: '0.75rem', letterSpacing: '-0.01em' }}>
                     Package #{result.package?.packageId || searchedId}
                   </h2>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
-                    Batch: <strong style={{ color: 'var(--honey-gold)' }}>{result.batch?.batchId || result.package?.batchId || 'N/A'}</strong> | Status: <span style={{ color: 'var(--accent-emerald)', fontWeight: 600 }}>{result.package?.status || 'VERIFIED'}</span>
+                    Traceability record verified against the recorded blockchain hash. &bull; Batch: <strong style={{ color: 'var(--honey-gold)' }}>{result.batch?.batchId || result.package?.batchId || 'N/A'}</strong>
                   </p>
                 </div>
 
@@ -318,7 +318,7 @@ export const VerifyPage: React.FC = () => {
 
             {/* Footer Prompt */}
             <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', padding: '1rem 0' }}>
-              HoneyChain Digital Supply Chain Ledger &bull; Immutable Authenticity Protection
+              HoneyChain Digital Supply Chain Ledger &bull; Tamper-Evident Traceability Anchoring
             </div>
 
           </div>

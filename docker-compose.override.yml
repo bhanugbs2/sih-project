@@ -1,0 +1,17 @@
+version: '3.8'
+
+# Local Development Overrides
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.override.yml up
+
+services:
+  backend:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_COM_NEXORA_HONEYCHAIN: DEBUG
+    ports:
+      - "8080:8080"
+
+  frontend:
+    ports:
+      - "3000:80"

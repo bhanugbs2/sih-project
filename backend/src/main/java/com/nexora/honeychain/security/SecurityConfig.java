@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/health", "/api/v1/health").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers("/api/verify/**").permitAll()
-                        .requestMatchers("/api/blockchain/event/**", "/api/blockchain/batch/**", "/api/blockchain/status").permitAll()
+                        .requestMatchers("/api/blockchain/event/**", "/api/blockchain/batch/**", "/api/blockchain/verify/**", "/api/blockchain/status").permitAll()
                         // Swagger & OpenAPI
                         .requestMatchers(
                                 "/v3/api-docs/**",

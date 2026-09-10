@@ -90,4 +90,16 @@ public class UserService {
         User updated = userRepository.save(user);
         return new UserResponse(updated);
     }
+
+    @Transactional
+    public UserResponse updateUserRole(String id, UserRole role) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        if (role != null) {
+            user.setRole(role);
+        }
+        User updated = userRepository.save(user);
+        return new UserResponse(updated);
+    }
 }

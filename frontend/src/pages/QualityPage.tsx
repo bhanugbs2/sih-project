@@ -243,7 +243,7 @@ export const QualityPage: React.FC = () => {
               disabled={aiEvaluating}
               style={{ marginTop: '0.5rem', width: '100%', justifyContent: 'center' }}
             >
-              {aiEvaluating ? 'Evaluating...' : 'Re-Run AI Quality Diagnostic'}
+              {aiEvaluating ? 'Evaluating...' : 'Re-Run AI-Assisted Quality Screening'}
             </button>
           </div>
 
@@ -293,6 +293,11 @@ export const QualityPage: React.FC = () => {
                     <strong>Risk Factors:</strong> {aiEvalResult.riskFactors.join(' | ')}
                   </div>
                 )}
+
+                <div style={{ marginTop: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  <span>Model Version: <strong style={{ color: 'var(--honey-gold)' }}>{aiEvalResult.modelVersion || 'honeychain-quality-v1'}</strong></span>
+                  <span>Engine: <strong style={{ color: 'var(--accent-cyan)' }}>{aiEvalResult.screeningMethod || 'ML_RANDOM_FOREST'}</strong></span>
+                </div>
               </div>
             </div>
           )}

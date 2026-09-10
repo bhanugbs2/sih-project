@@ -152,16 +152,26 @@ export const PackagesPage: React.FC = () => {
                   Linked Batch: <strong style={{ color: 'var(--text-primary)' }}>{pkg.batchId}</strong>
                 </div>
 
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  Packaged Date: {pkg.packagingDate ? new Date(pkg.packagingDate).toLocaleDateString() : 'Today'}
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem', background: 'rgba(255, 255, 255, 0.02)', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(window.location.origin + '/verify/' + pkg.packageId)}`}
+                    alt={`QR code for ${pkg.packageId}`}
+                    style={{ width: '64px', height: '64px', borderRadius: '4px', background: '#fff', padding: '2px' }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--honey-gold)', marginBottom: '0.15rem' }}>PROGRAMMATIC QR CODE</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', wordBreak: 'break-all' }}>
+                      {window.location.origin}/verify/{pkg.packageId}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div style={{ marginTop: '1.5rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <button
                   className="btn-secondary"
                   onClick={() => navigate(`/verify/${pkg.packageId}`)}
-                  style={{ width: '100%', justifyContent: 'center', padding: '0.5rem', fontSize: '0.85rem' }}
+                  style={{ width: '100%', justifyContent: 'center', padding: '0.5rem', fontSize: '0.85rem', gap: '0.4rem' }}
                 >
                   <ShieldCheck size={16} /> Public Verify Portal
                 </button>

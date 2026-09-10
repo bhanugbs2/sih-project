@@ -7,6 +7,8 @@ import { Hive, SensorReading, AIStatusResponse, AIAlert } from '../types';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { Thermometer, Droplets, Scale, Activity, ArrowLeft, AlertOctagon, Clock, RefreshCw, Cpu, Wifi, ShieldAlert, CheckCircle2 } from 'lucide-react';
 
+import { parseTimestampMs, formatRelativeTime, formatTimeOfDay, toValidDate } from '../utils/timeUtils';
+
 export const HiveDetailPage: React.FC = () => {
   const { hiveId } = useParams<{ hiveId: string }>();
   const navigate = useNavigate();
@@ -87,18 +89,22 @@ export const HiveDetailPage: React.FC = () => {
     );
   }
 
-  // Calculate telemetry age
-  const readingAgeSeconds = latestReading?.timestamp
-    ? Math.max(0, Math.floor((Date.now() - new Date(latestReading.timestamp).getTime()) / 1000))
-    : 999;
+  // Calculate telemetry age safely converting seconds/ms/ISO to epoch milliseconds
+  const readingMs = parseTimestampMs(latestReading?.timestamp);
+  const readingAgeSeconds = readingMs !== null
+    ? Math.max(0, Math.floor((Date.now() - readingMs) / 1000))
+    : 999999;
   const isTelemetryLive = readingAgeSeconds < 60;
 
   // Format timestamp for chart X-Axis
-  const chartData = history.map((item) => ({
-    time: new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-    temperature: item.temperature !== null ? item.temperature : null,
-    humidity: item.humidity !== null ? item.humidity : null,
-  }));
+  const chartData = history.map((item) => {
+    const itemDate = toValidDate(item.timestamp);
+    return {
+      time: itemDate ? itemDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '',
+      temperature: item.temperature !== null ? item.temperature : null,
+      humidity: item.humidity !== null ? item.humidity : null,
+    };
+  });
 
   return (
     <MainLayout>
@@ -152,7 +158,7 @@ export const HiveDetailPage: React.FC = () => {
               {isTelemetryLive ? 'ESP32 TELEMETRY LIVE' : 'TELEMETRY STALE / OFFLINE'}
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Last reading received: {latestReading ? `${readingAgeSeconds}s ago (${new Date(latestReading.timestamp).toLocaleTimeString()})` : 'No reading received yet'}
+              Last reading received: {latestReading ? `${formatRelativeTime(latestReading.timestamp)} (${formatTimeOfDay(latestReading.timestamp)})` : 'No reading received yet'}
               {' • Auto-refreshing every 5s'}
             </div>
           </div>
@@ -297,15 +303,15 @@ export const HiveDetailPage: React.FC = () => {
         </div>
       )}
 
-      {/* AI Health Diagnosis Card */}
+      {/* AI Health Screening Card */}
       {aiStatus && (
         <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 1rem 0', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <AlertOctagon size={20} style={{ color: 'var(--honey-bright)' }} /> AI Hive Health Diagnostics
+            <AlertOctagon size={20} style={{ color: 'var(--honey-bright)' }} /> AI-Assisted Hive Health Screening
           </h3>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <div style={{ padding: '0.75rem 1.25rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>DIAGNOSTIC STATUS</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>SCREENING STATUS</div>
               <div style={{ fontSize: '1.1rem', fontWeight: 700, color: aiStatus.status === 'NORMAL' ? 'var(--accent-emerald)' : 'var(--accent-rose)' }}>
                 {aiStatus.status}
               </div>
@@ -317,7 +323,11 @@ export const HiveDetailPage: React.FC = () => {
               </div>
             </div>
             <div style={{ flex: 1, minWidth: '240px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              {aiStatus.message || 'Continuous telemetry monitoring active. Environmental parameters within safe thresholds.'}
+              <div>{aiStatus.message || 'Continuous telemetry monitoring active. Environmental parameters within safe thresholds.'}</div>
+              <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', gap: '1.5rem' }}>
+                <span>Model: <strong style={{ color: 'var(--honey-gold)' }}>{aiStatus.modelVersion || 'honeychain-anomaly-v1'}</strong></span>
+                <span>Engine: <strong style={{ color: 'var(--accent-cyan)' }}>{aiStatus.screeningMethod || 'ML_RANDOM_FOREST'}</strong></span>
+              </div>
             </div>
           </div>
         </div>

@@ -67,4 +67,41 @@ public class AIController {
     public ResponseEntity<List<AIAlertResponse>> getAllAlerts() {
         return ResponseEntity.ok(aiAlertService.getAllSystemAlerts());
     }
+
+    @GetMapping("/alerts/unread")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR')")
+    @Operation(summary = "Get unread AI alerts", description = "Returns all unread AI anomaly alerts ordered newest first.")
+    @ApiResponse(responseCode = "200", description = "Unread alerts retrieved successfully")
+    public ResponseEntity<List<AIAlertResponse>> getUnreadAlerts() {
+        return ResponseEntity.ok(aiAlertService.getUnreadAlerts());
+    }
+
+    @GetMapping("/alerts/unread/count")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR')")
+    @Operation(summary = "Get unread alert count", description = "Returns current count of unread AI alerts.")
+    @ApiResponse(responseCode = "200", description = "Unread count retrieved successfully")
+    public ResponseEntity<java.util.Map<String, Long>> getUnreadCount() {
+        long count = aiAlertService.getUnreadCount();
+        return ResponseEntity.ok(java.util.Map.of("count", count));
+    }
+
+    @PatchMapping("/alerts/{id}/read")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR')")
+    @Operation(summary = "Mark alert as read", description = "Marks a specific AI alert as read.")
+    @ApiResponse(responseCode = "200", description = "Alert marked read successfully")
+    public ResponseEntity<AIAlertResponse> markAlertRead(@PathVariable("id") String id) {
+        return ResponseEntity.ok(aiAlertService.markAsRead(id));
+    }
+
+    @PatchMapping("/alerts/{id}/acknowledge")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR')")
+    @Operation(summary = "Acknowledge alert", description = "Marks a specific AI alert as acknowledged.")
+    @ApiResponse(responseCode = "200", description = "Alert acknowledged successfully")
+    public ResponseEntity<AIAlertResponse> acknowledgeAlert(
+            @PathVariable("id") String id,
+            java.security.Principal principal
+    ) {
+        String username = principal != null ? principal.getName() : "Authenticated User";
+        return ResponseEntity.ok(aiAlertService.acknowledgeAlert(id, username));
+    }
 }

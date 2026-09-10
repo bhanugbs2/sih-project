@@ -56,6 +56,12 @@ public class BlockchainService {
         TraceabilityEvent event = traceabilityEventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Traceability event not found: " + eventId));
 
+        // 0. Idempotency Check: Return immediately if already anchored
+        if (event.getBlockchainStatus() == BlockchainStatus.BLOCKCHAIN_ANCHORED && event.getBlockchainTransactionHash() != null) {
+            log.info("Event {} is already BLOCKCHAIN_ANCHORED with tx hash {}. Returning existing record.", eventId, event.getBlockchainTransactionHash());
+            return event;
+        }
+
         // 1. Calculate deterministic canonical SHA-256 hash
         String batchId = event.getBatch() != null ? event.getBatch().getBatchId() : "";
         String packageId = event.getPackageEntity() != null ? event.getPackageEntity().getPackageId() : "";
@@ -137,6 +143,38 @@ public class BlockchainService {
             event.setBlockchainNetwork(properties.getNetworkName());
             return traceabilityEventRepository.save(event);
         }
+    }
+
+    /**
+     * Verifies deterministic SHA-256 canonical data hash against stored event record.
+     * Returns MATCH or MISMATCH with audit details.
+     */
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Object> verifyEventDataIntegrity(String eventId) {
+        TraceabilityEvent event = traceabilityEventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Traceability event not found: " + eventId));
+
+        String batchId = event.getBatch() != null ? event.getBatch().getBatchId() : "";
+        String packageId = event.getPackageEntity() != null ? event.getPackageEntity().getPackageId() : "";
+        String metadata = event.getBlockchainReference() != null ? event.getBlockchainReference() : "";
+
+        String expectedHash = hashService.calculateCanonicalHash(batchId, packageId, event.getEventType(), metadata, event.getTimestamp());
+        String storedHash = event.getBlockchainDataHash();
+
+        boolean isMatch = storedHash != null && storedHash.equalsIgnoreCase(expectedHash);
+
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        result.put("eventId", eventId);
+        result.put("batchId", batchId);
+        result.put("packageId", packageId);
+        result.put("eventType", event.getEventType() != null ? event.getEventType().name() : "");
+        result.put("expectedHash", expectedHash);
+        result.put("storedHash", storedHash != null ? storedHash : "NOT_COMPUTED");
+        result.put("verificationResult", isMatch ? "MATCH" : (storedHash == null ? "UNANCHORED" : "MISMATCH"));
+        result.put("blockchainStatus", event.getBlockchainStatus() != null ? event.getBlockchainStatus().name() : "OFF_CHAIN_VERIFIED");
+        result.put("transactionHash", event.getBlockchainTransactionHash());
+
+        return result;
     }
 
     /**

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { login as loginApi } from '../services/api';
 import { UserRole } from '../types';
@@ -7,6 +7,7 @@ import { Eye, EyeOff, Lock, User, AlertCircle, RefreshCw, KeyRound, ShieldAlert 
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   const [username, setUsername] = useState('beekeeper');
@@ -14,6 +15,8 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const from = (location.state as any)?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +31,7 @@ export const LoginPage: React.FC = () => {
     try {
       const response = await loginApi({ username: username.trim(), password });
       login(response);
-      navigate('/dashboard');
+      navigate(from, { replace: true });
     } catch (err: any) {
       if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);

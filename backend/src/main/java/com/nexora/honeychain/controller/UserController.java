@@ -63,4 +63,21 @@ public class UserController {
         Boolean enabled = request != null ? request.getEnabled() : null;
         return ResponseEntity.ok(userService.toggleUserEnabled(id, enabled));
     }
+
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "Set user status", description = "Sets enabled status of a user account (Admin only).")
+    public ResponseEntity<UserResponse> updateUserStatus(
+            @PathVariable String id,
+            @RequestBody(required = false) UpdateUserEnabledRequest request) {
+        Boolean enabled = request != null ? request.getEnabled() : null;
+        return ResponseEntity.ok(userService.toggleUserEnabled(id, enabled));
+    }
+
+    @PatchMapping("/{id}/role")
+    @Operation(summary = "Update user role", description = "Assigns a new role to an existing user (Admin only).")
+    public ResponseEntity<UserResponse> updateUserRole(
+            @PathVariable String id,
+            @Valid @RequestBody com.nexora.honeychain.dto.auth.UpdateUserRoleRequest request) {
+        return ResponseEntity.ok(userService.updateUserRole(id, request.getRole()));
+    }
 }
