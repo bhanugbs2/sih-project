@@ -1,8 +1,8 @@
-import 'package:shared_preferences/shared_preferences.dart';
+﻿import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiConfig {
   static const String keyBaseUrl = 'honeychain_api_base_url';
-  static const String defaultEmulatorUrl = 'http://10.0.2.2:8080';
+  static const String defaultEmulatorUrl = 'http://192.168.31.246:8080';
   static const String envUrl = String.fromEnvironment('API_BASE_URL', defaultValue: '');
   
   static String _baseUrl = envUrl.isNotEmpty ? envUrl : defaultEmulatorUrl;
@@ -31,3 +31,4 @@ class ApiConfig {
     await prefs.setString(keyBaseUrl, _baseUrl);
   }
 }
+
