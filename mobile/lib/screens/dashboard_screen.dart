@@ -53,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadDashboardData({bool isBackground = false}) async {
-    if (!isBackground) {
+    if (_hives.isEmpty && !isBackground) {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
@@ -81,9 +81,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         });
       }
     } catch (e) {
-      if (mounted && !isBackground) {
+      if (mounted) {
         setState(() {
-          _errorMessage = e.toString();
+          if (_hives.isEmpty) {
+            _errorMessage = e.toString();
+          }
           _isLoading = false;
         });
       }

@@ -23,22 +23,30 @@ class _BatchListScreenState extends State<BatchListScreen> {
   }
 
   Future<void> _fetchBatches() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    if (_batches.isEmpty) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final batches = await BatchService.getAllBatches();
-      setState(() {
-        _batches = batches;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _batches = batches;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          if (_batches.isEmpty) {
+            _errorMessage = e.toString();
+          }
+          _isLoading = false;
+        });
+      }
     }
   }
 

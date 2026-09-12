@@ -26,6 +26,7 @@ class NetworkException implements Exception {
 class ApiClient {
   static const Duration timeoutDuration = Duration(seconds: 12);
   static bool _isHandlingUnauth = false;
+  static final http.Client _client = http.Client();
 
   static Future<Map<String, String>> _getHeaders({bool includeAuth = true}) async {
     final headers = <String, String>{
@@ -98,7 +99,7 @@ class ApiClient {
     try {
       final uri = _buildUri(path, queryParameters);
       final headers = await _getHeaders(includeAuth: includeAuth);
-      final response = await http.get(uri, headers: headers).timeout(timeoutDuration);
+      final response = await _client.get(uri, headers: headers).timeout(timeoutDuration);
       return _processResponse(response);
     } on TimeoutException {
       throw NetworkException('Request timed out. Please check server availability.');
@@ -115,7 +116,7 @@ class ApiClient {
       final uri = _buildUri(path);
       final headers = await _getHeaders(includeAuth: includeAuth);
       final jsonBody = body != null ? jsonEncode(body) : null;
-      final response = await http.post(uri, headers: headers, body: jsonBody).timeout(timeoutDuration);
+      final response = await _client.post(uri, headers: headers, body: jsonBody).timeout(timeoutDuration);
       return _processResponse(response);
     } on TimeoutException {
       throw NetworkException('Request timed out. Please check server availability.');
@@ -132,7 +133,7 @@ class ApiClient {
       final uri = _buildUri(path);
       final headers = await _getHeaders(includeAuth: includeAuth);
       final jsonBody = body != null ? jsonEncode(body) : null;
-      final response = await http.put(uri, headers: headers, body: jsonBody).timeout(timeoutDuration);
+      final response = await _client.put(uri, headers: headers, body: jsonBody).timeout(timeoutDuration);
       return _processResponse(response);
     } on TimeoutException {
       throw NetworkException('Request timed out. Please check server availability.');
@@ -149,7 +150,7 @@ class ApiClient {
       final uri = _buildUri(path);
       final headers = await _getHeaders(includeAuth: includeAuth);
       final jsonBody = body != null ? jsonEncode(body) : null;
-      final response = await http.patch(uri, headers: headers, body: jsonBody).timeout(timeoutDuration);
+      final response = await _client.patch(uri, headers: headers, body: jsonBody).timeout(timeoutDuration);
       return _processResponse(response);
     } on TimeoutException {
       throw NetworkException('Request timed out. Please check server availability.');
@@ -165,7 +166,7 @@ class ApiClient {
     try {
       final uri = _buildUri(path);
       final headers = await _getHeaders(includeAuth: includeAuth);
-      final response = await http.delete(uri, headers: headers).timeout(timeoutDuration);
+      final response = await _client.delete(uri, headers: headers).timeout(timeoutDuration);
       return _processResponse(response);
     } on TimeoutException {
       throw NetworkException('Request timed out. Please check server availability.');

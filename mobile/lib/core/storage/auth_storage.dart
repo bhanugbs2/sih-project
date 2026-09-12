@@ -12,9 +12,12 @@ class AuthStorage {
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
 
+  static String? _cachedToken;
+  static User? _cachedUser;
+
   static Future<void> saveToken(String token) async {
+    _cachedToken = token;
     await _secureStorage.write(key: _keyToken, value: token);
-    // Purge legacy unencrypted SharedPreferences entry if present
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey(_keyLegacyToken)) {
       await prefs.remove(_keyLegacyToken);
@@ -22,16 +25,20 @@ class AuthStorage {
   }
 
   static Future<String?> getToken() async {
-    // Check secure storage first
+    if (_cachedToken != null && _cachedToken!.isNotEmpty) {
+      return _cachedToken;
+    }
+
     String? token = await _secureStorage.read(key: _keyToken);
     if (token != null && token.isNotEmpty) {
+      _cachedToken = token;
       return token;
     }
 
-    // Auto-migrate from legacy SharedPreferences if present
     final prefs = await SharedPreferences.getInstance();
     final legacyToken = prefs.getString(_keyLegacyToken);
     if (legacyToken != null && legacyToken.isNotEmpty) {
+      _cachedToken = legacyToken;
       await _secureStorage.write(key: _keyToken, value: legacyToken);
       await prefs.remove(_keyLegacyToken);
       return legacyToken;
@@ -41,23 +48,31 @@ class AuthStorage {
   }
 
   static Future<void> saveUser(User user) async {
+    _cachedUser = user;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyUser, jsonEncode(user.toJson()));
   }
 
   static Future<User?> getUser() async {
+    if (_cachedUser != null) {
+      return _cachedUser;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final userStr = prefs.getString(_keyUser);
     if (userStr == null || userStr.isEmpty) return null;
     try {
       final jsonMap = jsonDecode(userStr) as Map<String, dynamic>;
-      return User.fromJson(jsonMap);
+      _cachedUser = User.fromJson(jsonMap);
+      return _cachedUser;
     } catch (_) {
       return null;
     }
   }
 
   static Future<void> clearAuth() async {
+    _cachedToken = null;
+    _cachedUser = null;
     await _secureStorage.delete(key: _keyToken);
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyLegacyToken);

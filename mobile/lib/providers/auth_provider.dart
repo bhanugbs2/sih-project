@@ -22,11 +22,27 @@ class AuthProvider extends ChangeNotifier {
   Future<void> initAuth() async {
     _isLoading = true;
     notifyListeners();
+
     try {
+      final cachedUser = await AuthStorage.getUser();
       final token = await AuthStorage.getToken();
+
       if (token != null && token.isNotEmpty) {
-        final user = await AuthService.getCurrentUser();
-        _currentUser = user;
+        if (cachedUser != null) {
+          _currentUser = cachedUser;
+          _isLoading = false;
+          notifyListeners();
+        }
+
+        try {
+          final user = await AuthService.getCurrentUser();
+          _currentUser = user;
+        } catch (e) {
+          if (cachedUser == null) {
+            _currentUser = null;
+            await AuthStorage.clearAuth();
+          }
+        }
       } else {
         _currentUser = null;
       }
@@ -45,9 +61,20 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await AuthService.login(username, password);
-      final user = await AuthService.getCurrentUser();
-      _currentUser = user;
+      final authResp = await AuthService.login(username, password);
+      try {
+        final user = await AuthService.getCurrentUser();
+        _currentUser = user;
+      } catch (_) {
+        _currentUser = User(
+          id: authResp.username,
+          username: authResp.username,
+          email: '${authResp.username}@honeychain.io',
+          role: authResp.role,
+          enabled: true,
+        );
+        await AuthStorage.saveUser(_currentUser!);
+      }
       _isLoading = false;
       notifyListeners();
       return true;

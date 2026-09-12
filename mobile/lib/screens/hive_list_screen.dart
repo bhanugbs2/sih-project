@@ -23,21 +23,29 @@ class _HiveListScreenState extends State<HiveListScreen> {
   }
 
   Future<void> _fetchHives() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    if (_hives.isEmpty) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
     try {
       final hives = await HiveService.getAllHives();
-      setState(() {
-        _hives = hives;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _hives = hives;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          if (_hives.isEmpty) {
+            _errorMessage = e.toString();
+          }
+          _isLoading = false;
+        });
+      }
     }
   }
 
