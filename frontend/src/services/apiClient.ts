@@ -10,12 +10,15 @@ export const apiClient = axios.create({
   timeout: 12000,
 });
 
-// Request Interceptor: Attach JWT Token if present in localStorage
+// Request Interceptor: Attach JWT Token if present in localStorage (except for public auth endpoints)
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('honeychain_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const isPublicAuthEndpoint = config.url && (config.url.includes('/api/auth/login') || config.url.includes('/api/auth/register') || config.url.includes('/api/verify'));
+    if (!isPublicAuthEndpoint) {
+      const token = localStorage.getItem('honeychain_token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
