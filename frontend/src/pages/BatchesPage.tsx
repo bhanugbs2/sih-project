@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MainLayout } from '../components/layout/MainLayout';
 import { PageHeader, StatusBadge, LoadingState, EmptyState, ErrorState, Modal } from '../components/common/UIComponents';
 import { getAllBatches, getAllHives, createBatch } from '../services/api';
 import { HoneyBatch, Hive } from '../types';
@@ -93,14 +92,14 @@ export const BatchesPage: React.FC = () => {
   });
 
   return (
-    <MainLayout>
+    <>
       <PageHeader
-        title="Honey Harvest Batches"
-        subtitle="Track honey batch lifecycle from harvest to quality screening, processing, and packaging readiness"
+        title="Honey Batches Log"
+        subtitle="Production batch record management and lifecycle status tracking"
         actions={
           (role === 'ADMIN' || role === 'BEEKEEPER') ? (
             <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
-              <Plus size={18} /> Register Harvest Batch
+              <Plus size={16} /> + Register Harvest Batch
             </button>
           ) : undefined
         }
@@ -108,76 +107,60 @@ export const BatchesPage: React.FC = () => {
 
       {/* Hardware Disclosure Notice */}
       <div style={{
-        padding: '0.85rem 1.25rem',
-        background: 'rgba(251, 191, 36, 0.1)',
-        border: '1px solid rgba(251, 191, 36, 0.3)',
-        borderRadius: 'var(--radius-md)',
-        marginBottom: '1.5rem',
+        padding: '0.75rem 1rem',
+        background: 'var(--status-warning-bg)',
+        border: '1px solid var(--status-warning-border)',
+        borderRadius: 'var(--radius-sm)',
+        marginBottom: '1.25rem',
         display: 'flex',
         alignItems: 'center',
-        gap: '0.75rem',
-        color: '#fbbf24',
-        fontSize: '0.875rem'
+        gap: '0.65rem',
+        color: 'var(--status-warning)',
+        fontSize: '0.825rem'
       }}>
-        <Info size={20} style={{ flexShrink: 0 }} />
+        <Info size={18} style={{ flexShrink: 0 }} />
         <div>
-          <strong>Manual Harvest Quantity Notice:</strong> ESP32 node is currently deployed with DHT22 temperature & humidity sensors. Load-cell hardware is not installed. All harvest weights are manually recorded by the beekeeper.
+          <strong>Manual Harvest Weight Record:</strong> ESP32 prototype hardware is deployed with DHT22 environmental sensors. Harvest quantities are recorded manually by apiary personnel.
         </div>
       </div>
 
       {/* Search & Filter Controls */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: '1 1 260px' }}>
-          <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          <Search size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             type="text"
             placeholder="Search Batch Code, Hive ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.65rem 1rem 0.65rem 2.75rem',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-md)',
-              color: 'var(--text-primary)',
-              fontSize: '0.9rem',
-              outline: 'none'
-            }}
+            className="form-control"
+            style={{ width: '100%', paddingLeft: '2.5rem' }}
           />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Filter size={16} style={{ color: 'var(--text-muted)' }} />
+          <Filter size={15} style={{ color: 'var(--text-muted)' }} />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            style={{
-              padding: '0.65rem 1rem',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-md)',
-              color: 'var(--text-primary)',
-              fontSize: '0.9rem',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
+            className="form-control"
+            style={{ cursor: 'pointer' }}
           >
-            <option value="ALL" style={{ background: '#121824' }}>All Statuses</option>
-            <option value="HARVESTED" style={{ background: '#121824' }}>HARVESTED</option>
-            <option value="QUALITY_TESTED" style={{ background: '#121824' }}>QUALITY_TESTED</option>
-            <option value="PROCESSING" style={{ background: '#121824' }}>PROCESSING</option>
-            <option value="PROCESSED" style={{ background: '#121824' }}>PROCESSED</option>
-            <option value="READY_FOR_PACKAGING" style={{ background: '#121824' }}>READY_FOR_PACKAGING</option>
-            <option value="REQUIRES_REVIEW" style={{ background: '#121824' }}>REQUIRES_REVIEW</option>
-            <option value="PACKAGED" style={{ background: '#121824' }}>PACKAGED</option>
-            <option value="RECALLED" style={{ background: '#121824' }}>RECALLED</option>
+            <option value="ALL">All Statuses</option>
+            <option value="HARVESTED">HARVESTED</option>
+            <option value="QUALITY_TESTED">QUALITY_TESTED</option>
+            <option value="PROCESSING">PROCESSING</option>
+            <option value="PROCESSED">PROCESSED</option>
+            <option value="READY_FOR_PACKAGING">READY_FOR_PACKAGING</option>
+            <option value="REQUIRES_REVIEW">REQUIRES_REVIEW</option>
+            <option value="PACKAGED">PACKAGED</option>
+            <option value="RECALLED">RECALLED</option>
           </select>
         </div>
       </div>
 
       {loading ? (
-        <LoadingState message="Fetching honey batches..." />
+        <LoadingState message="Fetching honey production batches..." />
       ) : error ? (
         <ErrorState message={error} onRetry={loadBatchesData} />
       ) : filteredBatches.length === 0 ? (
@@ -187,80 +170,74 @@ export const BatchesPage: React.FC = () => {
           description={search ? 'No batches match your filter criteria.' : 'No harvest batches have been created yet.'}
         />
       ) : (
-        <div className="glass-panel" style={{ padding: '1.5rem', overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
-                <th style={{ padding: '0.75rem 1rem' }}>Batch ID</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Source Hive</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Harvest Date</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Harvest Quantity</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Quantity Source</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Lifecycle Status</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredBatches.map((batch) => (
-                <tr
-                  key={batch.id}
-                  onClick={() => navigate(`/batches/${batch.batchId}`)}
-                  style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', cursor: 'pointer', transition: 'background 0.2s' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <td style={{ padding: '1rem', fontWeight: 700, color: 'var(--honey-gold)' }}>{batch.batchId}</td>
-                  <td style={{ padding: '1rem', color: 'var(--text-primary)', fontWeight: 500 }}>{batch.hiveId}</td>
-                  <td style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                    📅 {batch.harvestDate}
-                  </td>
-                  <td style={{ padding: '1rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
-                    {batch.quantity} {batch.unit || 'kg'}
-                  </td>
-                  <td style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.825rem' }}>
-                    {batch.quantitySource || 'Manual Harvest Quantity'}
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <StatusBadge status={batch.status} />
-                  </td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <button className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}>
-                      Inspect Timeline <ArrowRight size={14} />
-                    </button>
-                  </td>
+        <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Batch Code</th>
+                  <th>Source Hive</th>
+                  <th>Harvest Date</th>
+                  <th>Quantity</th>
+                  <th>Measurement Source</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredBatches.map((batch) => (
+                  <tr key={batch.id} onClick={() => navigate(`/batches/${batch.batchId}`)} style={{ cursor: 'pointer' }}>
+                    <td style={{ fontWeight: 600, color: 'var(--honey-brown)' }}>{batch.batchId}</td>
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{batch.hiveId}</td>
+                    <td style={{ color: 'var(--text-secondary)' }}>{batch.harvestDate}</td>
+                    <td style={{ color: 'var(--status-success)', fontWeight: 600 }}>
+                      {batch.quantity} {batch.unit || 'kg'}
+                    </td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                      {batch.quantitySource || 'Manual Harvest Quantity'}
+                    </td>
+                    <td><StatusBadge status={batch.status} /></td>
+                    <td>
+                      <button className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.775rem' }}>
+                        View Timeline <ArrowRight size={13} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* Register Batch Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Register Honey Harvest Batch">
         {formError && (
-          <div style={{ padding: '0.75rem', background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', borderRadius: 'var(--radius-md)', color: '#f43f5e', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          <div style={{ padding: '0.65rem 0.85rem', background: 'var(--status-danger-bg)', border: '1px solid var(--status-danger-border)', borderRadius: 'var(--radius-sm)', color: 'var(--status-danger)', fontSize: '0.825rem', marginBottom: '1rem' }}>
             {formError}
           </div>
         )}
         <form onSubmit={handleCreateBatch} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Batch Code / ID</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Batch Code / ID</label>
             <input
               type="text"
               placeholder="e.g. HC-BATCH-2026-VALLEY-12"
               value={newBatchId}
               onChange={(e) => setNewBatchId(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
               required
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Select Source Hive</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Select Source Hive</label>
             <select
               value={selectedHiveId}
               onChange={(e) => setSelectedHiveId(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#121824', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
               required
             >
               {hives.map((h) => (
@@ -271,42 +248,41 @@ export const BatchesPage: React.FC = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Harvest Date</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Harvest Date</label>
               <input
                 type="date"
                 value={harvestDate}
                 onChange={(e) => setHarvestDate(e.target.value)}
-                style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+                className="form-control"
+                style={{ width: '100%' }}
                 required
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Manual Harvest Quantity (kg)</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Quantity (kg)</label>
               <input
                 type="number"
                 step="0.1"
                 min="0.1"
                 value={quantity}
                 onChange={(e) => setQuantity(parseFloat(e.target.value))}
-                style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+                className="form-control"
+                style={{ width: '100%' }}
                 required
               />
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Harvest Notes & Super Observations</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Harvest Notes & Super Observations</label>
             <textarea
               placeholder="Record frame conditions, floral source, or extraction notes..."
               value={harvestNotes}
               onChange={(e) => setHarvestNotes(e.target.value)}
               rows={3}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none', resize: 'vertical' }}
+              className="form-control"
+              style={{ width: '100%', resize: 'vertical' }}
             />
-          </div>
-
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.03)', padding: '0.6rem 0.85rem', borderRadius: 'var(--radius-sm)' }}>
-            ℹ️ Source Label: <strong>Manual Harvest Quantity</strong> (Load-cell hardware not installed)
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
@@ -317,6 +293,6 @@ export const BatchesPage: React.FC = () => {
           </div>
         </form>
       </Modal>
-    </MainLayout>
+    </>
   );
 };

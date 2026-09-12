@@ -65,7 +65,7 @@ public class DtoMapper {
     public static SensorReadingResponse toSensorReadingResponse(SensorReading reading) {
         if (reading == null) return null;
         Long epochSecond = reading.getTimestamp() != null ? reading.getTimestamp().getEpochSecond() : null;
-        return new SensorReadingResponse(
+        SensorReadingResponse response = new SensorReadingResponse(
                 reading.getId(),
                 reading.getHive() != null ? reading.getHive().getHiveId() : null,
                 reading.getTemperature(),
@@ -76,6 +76,25 @@ public class DtoMapper {
                 reading.getLongitude(),
                 epochSecond
         );
+        response.setInternalTemperatureC(reading.getInternalTemperatureC());
+        response.setInternalHumidityRh(reading.getInternalHumidityRh());
+        response.setWeightKg(reading.getWeightKg());
+        response.setCo2Ppm(reading.getCo2Ppm());
+        response.setAcousticLevel(reading.getAcousticLevel());
+        response.setAcousticRms(reading.getAcousticRms());
+        response.setAcousticActivity(reading.getAcousticActivity());
+        response.setVibrationX(reading.getVibrationX());
+        response.setVibrationY(reading.getVibrationY());
+        response.setVibrationZ(reading.getVibrationZ());
+        response.setVibrationMagnitude(reading.getVibrationMagnitude());
+        response.setAltitude(reading.getAltitude());
+        response.setPositionAccuracy(reading.getPositionAccuracy());
+        response.setSatelliteCount(reading.getSatelliteCount());
+        response.setFixStatus(reading.getFixStatus());
+        response.setGpsTimestamp(reading.getGpsTimestamp());
+        response.setSensorStatus(reading.getSensorStatus() != null ? reading.getSensorStatus() : "GOOD");
+        response.setDataQuality(reading.getDataQuality() != null ? reading.getDataQuality() : "GOOD");
+        return response;
     }
 
     public static SensorReading toSensorReadingEntity(CreateSensorReadingRequest request, Hive hive) {
@@ -90,8 +109,31 @@ public class DtoMapper {
         );
         reading.setLatitude(request.getLatitude());
         reading.setLongitude(request.getLongitude());
+
+        reading.setInternalTemperatureC(request.getInternalTemperatureC());
+        reading.setInternalHumidityRh(request.getInternalHumidityRh());
+        reading.setWeightKg(request.getWeightKg());
+        reading.setCo2Ppm(request.getCo2Ppm());
+        reading.setAcousticLevel(request.getAcousticLevel());
+        reading.setAcousticRms(request.getAcousticRms());
+        reading.setAcousticActivity(request.getAcousticActivity());
+        reading.setVibrationX(request.getVibrationX());
+        reading.setVibrationY(request.getVibrationY());
+        reading.setVibrationZ(request.getVibrationZ());
+        reading.setVibrationMagnitude(request.getVibrationMagnitude());
+
+        reading.setAltitude(request.getAltitude());
+        reading.setPositionAccuracy(request.getPositionAccuracy());
+        reading.setSatelliteCount(request.getSatelliteCount());
+        reading.setFixStatus(request.getFixStatus());
+        reading.setGpsTimestamp(request.getGpsTimestamp());
+
+        if (request.getSensorStatus() != null) reading.setSensorStatus(request.getSensorStatus());
+        if (request.getDataQuality() != null) reading.setDataQuality(request.getDataQuality());
+
         return reading;
     }
+
 
     public static AIAlertResponse toAIAlertResponse(AIAlert alert) {
         if (alert == null) return null;

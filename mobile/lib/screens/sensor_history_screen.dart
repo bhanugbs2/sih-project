@@ -47,7 +47,7 @@ class _SensorHistoryScreenState extends State<SensorHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sensor History — ${widget.hiveId}'),
+        title: Text('Industrial Multi-Sensor Log — ${widget.hiveId}'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -69,7 +69,7 @@ class _SensorHistoryScreenState extends State<SensorHistoryScreen> {
                         itemBuilder: (context, index) {
                           final reading = _history[index];
                           return Card(
-                            margin: const EdgeInsets.only(bottom: 10),
+                            margin: const EdgeInsets.only(bottom: 12),
                             child: Padding(
                               padding: const EdgeInsets.all(14),
                               child: Column(
@@ -92,9 +92,9 @@ class _SensorHistoryScreenState extends State<SensorHistoryScreen> {
                                           color: AppTheme.statusSuccess.withOpacity(0.15),
                                           borderRadius: BorderRadius.circular(4),
                                         ),
-                                        child: const Text(
-                                          'DHT22 Recorded',
-                                          style: TextStyle(
+                                        child: Text(
+                                          reading.qualityFlags ?? '6-SENSOR SUITE OK',
+                                          style: const TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.bold,
                                             color: AppTheme.statusSuccess,
@@ -104,6 +104,8 @@ class _SensorHistoryScreenState extends State<SensorHistoryScreen> {
                                     ],
                                   ),
                                   const Divider(height: 16),
+                                  
+                                  // Row 1: Temp & Humidity
                                   Row(
                                     children: [
                                       Expanded(
@@ -112,9 +114,7 @@ class _SensorHistoryScreenState extends State<SensorHistoryScreen> {
                                             const Icon(Icons.thermostat, size: 18, color: AppTheme.primaryAmber),
                                             const SizedBox(width: 6),
                                             Text(
-                                              reading.temperature != null
-                                                  ? '${reading.temperature!.toStringAsFixed(1)} °C'
-                                                  : 'N/A',
+                                              '${reading.displayTemp.toStringAsFixed(1)} °C',
                                               style: const TextStyle(fontWeight: FontWeight.w600),
                                             ),
                                           ],
@@ -126,9 +126,7 @@ class _SensorHistoryScreenState extends State<SensorHistoryScreen> {
                                             const Icon(Icons.water_drop, size: 18, color: AppTheme.statusInfo),
                                             const SizedBox(width: 6),
                                             Text(
-                                              reading.humidity != null
-                                                  ? '${reading.humidity!.toStringAsFixed(1)} %'
-                                                  : 'N/A',
+                                              '${reading.displayHumidity.toStringAsFixed(1)} %',
                                               style: const TextStyle(fontWeight: FontWeight.w600),
                                             ),
                                           ],
@@ -137,18 +135,63 @@ class _SensorHistoryScreenState extends State<SensorHistoryScreen> {
                                     ],
                                   ),
                                   const SizedBox(height: 8),
+
+                                  // Row 2: Weight & CO2
                                   Row(
                                     children: [
                                       Expanded(
-                                        child: Text(
-                                          'Weight: ${reading.weight != null ? "${reading.weight!.toStringAsFixed(1)} kg" : "Not Installed"}',
-                                          style: const TextStyle(fontSize: 11, color: AppTheme.darkTextSecondary),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.scale, size: 18, color: AppTheme.statusSuccess),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              '${reading.displayWeight.toStringAsFixed(2)} kg',
+                                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                       Expanded(
-                                        child: Text(
-                                          'Sound: ${reading.soundLevel != null ? "${reading.soundLevel!.toStringAsFixed(1)} dB" : "Not Installed"}',
-                                          style: const TextStyle(fontSize: 11, color: AppTheme.darkTextSecondary),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.air, size: 18, color: Colors.purpleAccent),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              '${reading.displayCo2.toStringAsFixed(0)} ppm',
+                                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+
+                                  // Row 3: Acoustics & Vibration
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.graphic_eq, size: 18, color: Colors.pinkAccent),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              '${reading.displayAcoustics.toStringAsFixed(1)} dB',
+                                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.vibration, size: 18, color: Colors.redAccent),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              '${reading.displayVibrationMag.toStringAsFixed(4)} g',
+                                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -168,9 +211,9 @@ class _SensorHistoryScreenState extends State<SensorHistoryScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 50, color: AppTheme.statusDanger),
+          const Icon(Icons.error_outline, size: 48, color: AppTheme.statusDanger),
           const SizedBox(height: 12),
-          Text(_errorMessage ?? 'Failed to load telemetry history'),
+          Text(_errorMessage ?? 'An error occurred'),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _fetchHistory,

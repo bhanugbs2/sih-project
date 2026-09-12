@@ -13,26 +13,39 @@ import {
   FileCheck2,
   Users,
   Building2,
-  LogOut,
+  Cpu,
   ChevronLeft,
   ChevronRight,
   ShieldCheck
 } from 'lucide-react';
 
 interface SidebarProps {
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileClose }) => {
-  const { role, logout } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
+export const Sidebar: React.FC<SidebarProps> = ({
+  collapsed: externalCollapsed,
+  onToggleCollapse,
+  mobileOpen = false,
+  onMobileClose
+}) => {
+  const { role } = useAuth();
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
 
-  const navigationItems = [
+  const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
+  const toggleCollapse = onToggleCollapse || (() => setInternalCollapsed(!internalCollapsed));
+
+  const mainItems = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
     { label: 'Hives', path: '/hives', icon: Boxes, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
-    { label: 'Sensor History', path: '/hives/HIVE-HIM-001', icon: Activity, roles: ['ADMIN', 'BEEKEEPER'] },
+    { label: 'Sensor History', path: '/sensor-history', icon: Activity, roles: ['ADMIN', 'BEEKEEPER'] },
     { label: 'AI Alerts', path: '/alerts', icon: AlertOctagon, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
+  ];
+
+  const traceabilityItems = [
     { label: 'Honey Batches', path: '/batches', icon: PackageCheck, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
     { label: 'Quality Testing', path: '/quality', icon: FlaskConical, roles: ['ADMIN', 'QUALITY_INSPECTOR'] },
     { label: 'Processing Logs', path: '/processing', icon: Filter, roles: ['ADMIN', 'BEEKEEPER'] },
@@ -41,62 +54,117 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
   ];
 
   const adminItems = [
+    { label: 'IoT Gateway Fleet', path: '/gateways', icon: Cpu, roles: ['ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR'] },
     { label: 'Apiary Farms', path: '/farms', icon: Building2, roles: ['ADMIN', 'BEEKEEPER'] },
     { label: 'User Accounts', path: '/users', icon: Users, roles: ['ADMIN'] },
   ];
 
-  const allowedNav = navigationItems.filter(item => !role || item.roles.includes(role));
-  const allowedAdminNav = adminItems.filter(item => !role || item.roles.includes(role));
+  const allowedMain = mainItems.filter(item => !role || item.roles.includes(role));
+  const allowedTraceability = traceabilityItems.filter(item => !role || item.roles.includes(role));
+  const allowedAdmin = adminItems.filter(item => !role || item.roles.includes(role));
 
   const width = collapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)';
 
+  const renderNavGroup = (title: string, items: typeof mainItems) => {
+    if (items.length === 0) return null;
+    return (
+      <div style={{ marginBottom: '1.25rem' }}>
+        {!collapsed && (
+          <div style={{
+            fontSize: '0.675rem',
+            textTransform: 'uppercase',
+            color: 'var(--text-muted)',
+            fontWeight: 700,
+            letterSpacing: '0.06em',
+            padding: '0.35rem 0.75rem 0.4rem 0.75rem'
+          }}>
+            {title}
+          </div>
+        )}
+        {items.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            onClick={onMobileClose}
+            title={collapsed ? item.label : undefined}
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            style={({ isActive }) => ({
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: collapsed ? '0.65rem 0' : '0.55rem 0.75rem',
+              justifyContent: collapsed ? 'center' : 'flex-start',
+              borderRadius: 'var(--radius-sm)',
+              color: isActive ? 'var(--honey-brown)' : 'var(--text-secondary)',
+              background: isActive ? 'var(--honey-amber-light)' : 'transparent',
+              borderLeft: isActive ? '3px solid var(--honey-amber)' : '3px solid transparent',
+              fontWeight: isActive ? 600 : 500,
+              fontSize: '0.875rem',
+              textDecoration: 'none',
+              transition: 'all 0.15s ease',
+              whiteSpace: 'nowrap',
+              marginBottom: '0.15rem'
+            })}
+          >
+            <item.icon size={18} style={{ flexShrink: 0, color: 'inherit' }} />
+            {!collapsed && <span>{item.label}</span>}
+          </NavLink>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <aside style={{
-      width: width,
-      height: '100vh',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      zIndex: 100,
-      background: 'rgba(12, 16, 26, 0.95)',
-      backdropFilter: 'blur(16px)',
-      borderRight: '1px solid var(--border-color)',
-      display: 'flex',
-      flexDirection: 'column',
-      transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      overflowX: 'hidden'
-    }}>
+    <aside
+      className={`app-sidebar ${mobileOpen ? 'mobile-open' : ''}`}
+      style={{
+        width: width,
+        height: '100vh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: 100,
+        background: 'var(--bg-secondary)',
+        borderRight: '1px solid var(--border-color)',
+        display: 'flex',
+        flexDirection: 'column',
+        transition: 'width 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s ease',
+        overflowX: 'hidden'
+      }}
+    >
       {/* Sidebar Header */}
       <div style={{
         height: 'var(--topbar-height)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: collapsed ? 'center' : 'space-between',
-        padding: collapsed ? '0' : '0 1.25rem',
-        borderBottom: '1px solid var(--border-color)'
+        padding: collapsed ? '0 0.5rem' : '0 1rem',
+        borderBottom: '1px solid var(--border-color)',
+        gap: '0.5rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', overflow: 'hidden' }}>
           <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
+            width: '32px',
+            height: '32px',
+            minWidth: '32px',
+            borderRadius: 'var(--radius-sm)',
+            background: 'var(--honey-amber)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#000',
+            color: '#FFFFFF',
             fontWeight: 800,
-            fontSize: '1.2rem',
-            boxShadow: '0 4px 14px rgba(245, 158, 11, 0.3)'
+            fontSize: '1rem',
+            flexShrink: 0
           }}>
             🍯
           </div>
           {!collapsed && (
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-                Honey<span className="gradient-text">Chain</span>
+            <div style={{ whiteSpace: 'nowrap' }}>
+              <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+                HoneyChain
               </div>
-              <div style={{ fontSize: '0.65rem', color: 'var(--honey-gold)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+              <div style={{ fontSize: '0.625rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
                 Smart Beekeeping
               </div>
             </div>
@@ -104,136 +172,57 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
         </div>
 
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={toggleCollapse}
+          title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           style={{
-            background: 'rgba(255, 255, 255, 0.05)',
+            background: 'none',
             border: '1px solid var(--border-color)',
             color: 'var(--text-secondary)',
             borderRadius: 'var(--radius-sm)',
-            padding: '0.35rem',
+            padding: '0.3rem',
             cursor: 'pointer',
-            display: collapsed ? 'none' : 'flex',
+            display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            flexShrink: 0
           }}
         >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
       </div>
 
-      {/* Navigation Links */}
-      <div style={{ flex: 1, padding: '1rem 0.75rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-        <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.08em', padding: collapsed ? '0 0 0.5rem 0' : '0.5rem 0.75rem', textAlign: collapsed ? 'center' : 'left' }}>
-          {collapsed ? '•' : 'Main Menu'}
-        </div>
+      {/* Navigation Groups */}
+      <div style={{ flex: 1, padding: '1rem 0.5rem', overflowY: 'auto' }}>
+        {renderNavGroup('Main', allowedMain)}
+        {renderNavGroup('Honey Traceability', allowedTraceability)}
+        {renderNavGroup('Administration', allowedAdmin)}
 
-        {allowedNav.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            onClick={onMobileClose}
-            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-            style={({ isActive }) => ({
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.85rem',
-              padding: collapsed ? '0.75rem 0' : '0.7rem 0.85rem',
-              justifyContent: collapsed ? 'center' : 'flex-start',
-              borderRadius: 'var(--radius-md)',
-              color: isActive ? '#000' : 'var(--text-secondary)',
-              background: isActive ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' : 'transparent',
-              fontWeight: isActive ? 600 : 500,
-              fontSize: '0.9rem',
-              textDecoration: 'none',
-              transition: 'all 0.2s ease',
-              boxShadow: isActive ? '0 4px 12px rgba(245, 158, 11, 0.25)' : 'none'
-            })}
-          >
-            <item.icon size={19} />
-            {!collapsed && <span>{item.label}</span>}
-          </NavLink>
-        ))}
-
-        {allowedAdminNav.length > 0 && (
-          <>
-            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.08em', padding: collapsed ? '1rem 0 0.5rem 0' : '1.25rem 0.75rem 0.5rem 0.75rem', textAlign: collapsed ? 'center' : 'left' }}>
-              {collapsed ? '•' : 'Administration'}
-            </div>
-            {allowedAdminNav.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={onMobileClose}
-                style={({ isActive }) => ({
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.85rem',
-                  padding: collapsed ? '0.75rem 0' : '0.7rem 0.85rem',
-                  justifyContent: collapsed ? 'center' : 'flex-start',
-                  borderRadius: 'var(--radius-md)',
-                  color: isActive ? '#000' : 'var(--text-secondary)',
-                  background: isActive ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' : 'transparent',
-                  fontWeight: isActive ? 600 : 500,
-                  fontSize: '0.9rem',
-                  textDecoration: 'none',
-                  transition: 'all 0.2s ease'
-                })}
-              >
-                <item.icon size={19} />
-                {!collapsed && <span>{item.label}</span>}
-              </NavLink>
-            ))}
-          </>
-        )}
-
-        <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+        {/* Bottom Link: Public Verify */}
+        <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
           <NavLink
             to="/verify/HC-PKG-2026-001"
+            title={collapsed ? "Public Verify" : undefined}
+            className="nav-item"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.85rem',
-              padding: collapsed ? '0.75rem 0' : '0.7rem 0.85rem',
+              gap: '0.75rem',
+              padding: collapsed ? '0.65rem 0' : '0.55rem 0.75rem',
               justifyContent: collapsed ? 'center' : 'flex-start',
-              borderRadius: 'var(--radius-md)',
-              color: 'var(--accent-emerald)',
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.25)',
+              borderRadius: 'var(--radius-sm)',
+              color: 'var(--status-success)',
+              background: 'var(--status-success-bg)',
+              border: '1px solid var(--status-success-border)',
               fontWeight: 600,
-              fontSize: '0.85rem',
-              textDecoration: 'none'
+              fontSize: '0.825rem',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap'
             }}
           >
-            <ShieldCheck size={19} />
+            <ShieldCheck size={18} style={{ flexShrink: 0 }} />
             {!collapsed && <span>Public Verify</span>}
           </NavLink>
         </div>
-      </div>
-
-      {/* Sidebar Footer Logout */}
-      <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid var(--border-color)' }}>
-        <button
-          onClick={logout}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: collapsed ? 'center' : 'flex-start',
-            gap: '0.75rem',
-            padding: '0.65rem 0.85rem',
-            borderRadius: 'var(--radius-md)',
-            background: 'rgba(244, 63, 94, 0.1)',
-            color: 'var(--accent-rose)',
-            border: '1px solid rgba(244, 63, 94, 0.25)',
-            fontWeight: 600,
-            fontSize: '0.875rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }}
-        >
-          <LogOut size={18} />
-          {!collapsed && <span>Sign Out</span>}
-        </button>
       </div>
     </aside>
   );

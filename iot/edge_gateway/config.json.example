@@ -1,0 +1,18 @@
+{
+  "gatewayId": "GW-PI5-HIM-001",
+  "name": "Raspberry Pi 5 Edge IoT Gateway - Apiary Alpha",
+  "farmId": "FARM-HIM-001",
+  "apiaryId": "APIARY-HIM-A",
+  "hiveId": "HIVE-HIM-001",
+  "hardwareVersion": "Raspberry Pi 5 Model B (8GB)",
+  "firmwareVersion": "v2.4.0-industrial",
+  "backendApiUrl": "http://192.168.0.144:8080/api/sensors",
+  "mqttBrokerHost": "192.168.0.144",
+  "mqttBrokerPort": 1883,
+  "mqttTopicPrefix": "honeychain",
+  "pollIntervalSeconds": 10,
+  "storeAndForwardEnabled": true,
+  "simulatedSensors": false,
+  "rs485SerialPort": "/dev/ttyUSB0",
+  "rs485BaudRate": 9600
+}

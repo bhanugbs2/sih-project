@@ -89,6 +89,29 @@ export interface SensorReading {
   longitude?: number | null;
   timestamp: string;
   createdAt?: string;
+
+  // Industrial Multi-Sensor Fields
+  internalTemperatureC?: number | null;
+  internalHumidityRh?: number | null;
+  weightKg?: number | null;
+  co2Ppm?: number | null;
+  acousticLevel?: number | null;
+  acousticRms?: number | null;
+  acousticActivity?: string | null;
+  vibrationX?: number | null;
+  vibrationY?: number | null;
+  vibrationZ?: number | null;
+  vibrationMagnitude?: number | null;
+  
+  // GNSS / GPS 7th Sensor Category
+  altitude?: number | null;
+  positionAccuracy?: number | null;
+  satelliteCount?: number | null;
+  fixStatus?: string | null;
+  gpsTimestamp?: string | null;
+
+  sensorSuiteVersion?: string | null;
+  qualityFlags?: string | null;
 }
 
 export interface CreateSensorReadingRequest {
@@ -99,6 +122,29 @@ export interface CreateSensorReadingRequest {
   soundLevel?: number | null;
   latitude?: number | null;
   longitude?: number | null;
+
+  // Industrial Multi-Sensor Fields
+  internalTemperatureC?: number | null;
+  internalHumidityRh?: number | null;
+  weightKg?: number | null;
+  co2Ppm?: number | null;
+  acousticLevel?: number | null;
+  acousticRms?: number | null;
+  acousticActivity?: string | null;
+  vibrationX?: number | null;
+  vibrationY?: number | null;
+  vibrationZ?: number | null;
+  vibrationMagnitude?: number | null;
+
+  // GNSS / GPS 7th Sensor Category
+  altitude?: number | null;
+  positionAccuracy?: number | null;
+  satelliteCount?: number | null;
+  fixStatus?: string | null;
+  gpsTimestamp?: string | null;
+
+  sensorSuiteVersion?: string | null;
+  qualityFlags?: string | null;
 }
 
 export type AIAlertStatus = 'NORMAL' | 'WARNING' | 'CRITICAL';
@@ -175,6 +221,7 @@ export interface HoneyBatch {
   id: string;
   batchId: string;
   hiveId: string;
+  hiveName?: string;
   farmId?: string;
   farmName?: string;
   harvestDate: string;
@@ -325,3 +372,44 @@ export interface SystemStatus {
   blockchainEnv?: string;
   [key: string]: any;
 }
+
+export type GatewayStatus = 'ONLINE' | 'OFFLINE' | 'DEGRADED' | 'MAINTENANCE';
+
+export interface IoTGatewayDevice {
+  id: string;
+  gatewayId: string;
+  name: string;
+  farmId?: string;
+  apiaryId?: string;
+  hiveId?: string;
+  hardwareVersion: string;
+  firmwareVersion: string;
+  status: GatewayStatus;
+  powerStatus?: string;
+  ipAddress?: string;
+  lastSeen?: string;
+  lastTelemetryTimestamp?: string;
+  createdAt?: string;
+}
+
+export interface CreateGatewayRequest {
+  gatewayId: string;
+  name: string;
+  farmId?: string;
+  apiaryId?: string;
+  hiveId?: string;
+  hardwareVersion: string;
+  firmwareVersion: string;
+  status?: GatewayStatus;
+  powerStatus?: string;
+  ipAddress?: string;
+}
+
+export interface FleetSummaryResponse {
+  totalGateways: number;
+  onlineGateways: number;
+  offlineGateways: number;
+  degradedGateways: number;
+  maintenanceGateways: number;
+}
+

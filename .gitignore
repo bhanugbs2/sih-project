@@ -9,6 +9,7 @@ desktop.ini
 *.swp
 *.swo
 *.iml
+local.properties
 
 # Node / Frontend Build Outputs
 node_modules/
@@ -42,6 +43,10 @@ blockchain/.env
 *.key
 *.pem
 *.p12
+*.jks
+*.keystore
+key.properties
+google-services.json
 
 # Temporary & Test Coverage Files
 .system_generated/
@@ -49,12 +54,21 @@ coverage/
 .mvn/.decompiler/
 
 # Flutter Mobile Build & Generated Files
+.dart_tool/
+.gradle/
+build/
 mobile/.dart_tool/
 mobile/.flutter-plugins
 mobile/.flutter-plugins-dependencies
 mobile/.packages
 mobile/build/
 mobile/android/.gradle/
+mobile/android/local.properties
 mobile/ios/Flutter/App.framework
 mobile/ios/Flutter/Flutter.framework
+
+# Local Release Binaries (Uploaded to GitHub Releases)
+releases/
+*.apk
+
 

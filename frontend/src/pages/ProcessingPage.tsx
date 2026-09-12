@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { MainLayout } from '../components/layout/MainLayout';
 import { PageHeader, LoadingState, EmptyState, ErrorState, Modal } from '../components/common/UIComponents';
 import { getAllBatches, getProcessingRecordsByBatchId, addProcessingRecord } from '../services/api';
 import { HoneyBatch, ProcessingRecord } from '../types';
@@ -40,7 +39,7 @@ export const ProcessingPage: React.FC = () => {
         setProcessingRecords(records);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to load processing records.');
+      setError(err.message || 'Failed to load processing logs.');
     } finally {
       setLoading(false);
     }
@@ -59,7 +58,7 @@ export const ProcessingPage: React.FC = () => {
       const records = await getProcessingRecordsByBatchId(batchId).catch(() => []);
       setProcessingRecords(records);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Failed to load batch processing records.');
     } finally {
       setLoading(false);
     }
@@ -108,38 +107,28 @@ export const ProcessingPage: React.FC = () => {
   };
 
   return (
-    <MainLayout>
+    <>
       <PageHeader
-        title="Processing & Operations History"
-        subtitle="Log honey extraction, micro-filtration, pasteurization, and packaging preparation"
+        title="Processing & Operations Log"
+        subtitle="Extraction, micro-filtration, pasteurization, and packaging preparation step logs"
         actions={
           (role === 'ADMIN' || role === 'BEEKEEPER') ? (
             <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
-              <Plus size={18} /> Record Processing Step
+              <Plus size={16} /> + Record Processing Step
             </button>
           ) : undefined
         }
       />
 
-      {/* Batch Selector & Quality Gate Warning Banner */}
-      <div className="glass-panel" style={{ padding: '1.25rem 1.5rem', marginBottom: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {/* Batch Selector & Quality Gate Warning */}
+      <div className="glass-panel" style={{ padding: '1rem 1.25rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <span style={{ fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Select Batch:</span>
+          <span style={{ fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Select Honey Batch:</span>
           <select
             value={selectedBatchId}
             onChange={(e) => handleBatchChange(e.target.value)}
-            style={{
-              padding: '0.65rem 1.25rem',
-              background: '#121824',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-md)',
-              color: 'var(--accent-cyan)',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              outline: 'none',
-              cursor: 'pointer',
-              flex: '1 1 280px'
-            }}
+            className="form-control"
+            style={{ fontWeight: 600, color: 'var(--honey-brown)', flex: '1 1 260px' }}
           >
             {batches.map((b) => (
               <option key={b.id} value={b.batchId}>
@@ -150,10 +139,10 @@ export const ProcessingPage: React.FC = () => {
         </div>
 
         {selectedBatch && isBatchBlockedFromProcessing(selectedBatch) && (
-          <div style={{ padding: '0.75rem 1rem', background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', borderRadius: 'var(--radius-md)', color: '#f43f5e', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <AlertTriangle size={18} />
+          <div style={{ padding: '0.65rem 0.85rem', background: 'var(--status-warning-bg)', border: '1px solid var(--status-warning-border)', borderRadius: 'var(--radius-sm)', color: 'var(--status-warning)', fontSize: '0.825rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <AlertTriangle size={16} />
             <span>
-              <strong>Quality Gate Restriction:</strong> Batch <strong>{selectedBatch.batchId}</strong> has status <strong>{selectedBatch.status}</strong>. Normal processing is blocked until laboratory quality testing is completed with a PASS result.
+              <strong>Quality Gate Notice:</strong> Batch <strong>{selectedBatch.batchId}</strong> status is <strong>{selectedBatch.status}</strong>. Quality test PASS is required prior to processing.
             </span>
           </div>
         )}
@@ -171,53 +160,53 @@ export const ProcessingPage: React.FC = () => {
           action={
             (role === 'ADMIN' || role === 'BEEKEEPER') ? (
               <button className="btn-primary" onClick={() => setIsModalOpen(true)} disabled={isBatchBlockedFromProcessing(selectedBatch)}>
-                Add Processing Step
+                + Add Processing Step
               </button>
             ) : undefined
           }
         />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {processingRecords.map((record) => (
-            <div key={record.id} className="glass-panel" style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ padding: '0.5rem', borderRadius: 'var(--radius-md)', background: 'rgba(6, 182, 212, 0.15)', color: 'var(--accent-cyan)' }}>
-                    <CheckCircle size={20} />
+            <div key={record.id} className="glass-panel" style={{ padding: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <div style={{ padding: '0.4rem', borderRadius: 'var(--radius-sm)', background: 'var(--status-info-bg)', color: 'var(--status-info)' }}>
+                    <CheckCircle size={18} />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>
                       {record.operation || record.processType}
                     </h3>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      Batch: {selectedBatchId}
+                    <span style={{ fontSize: '0.775rem', color: 'var(--text-muted)' }}>
+                      Batch Code: {selectedBatchId}
                     </span>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   {record.processingTemperature != null && (
-                    <div style={{ fontSize: '0.825rem', color: 'var(--honey-gold)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <Thermometer size={16} />
-                      <span>{record.processingTemperature}°C ({record.tempSource || 'Manual Processing Temperature'})</span>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--honey-brown)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Thermometer size={14} />
+                      <span>{record.processingTemperature}°C</span>
                     </div>
                   )}
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <Clock size={14} />
+                  <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <Clock size={13} />
                     <span>{new Date(record.timestamp).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
 
               {record.description && (
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.925rem', margin: '0 0 1rem 0', lineHeight: 1.5 }}>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: '0 0 0.75rem 0' }}>
                   {record.description}
                 </p>
               )}
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.825rem', color: 'var(--honey-gold)', paddingTop: '0.65rem', borderTop: '1px solid var(--border-color)' }}>
-                <User size={14} />
-                <span>Operator: <strong>{record.operator || record.verifiedBy || 'Processing Manager'}</strong></span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.775rem', color: 'var(--text-muted)', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
+                <User size={13} />
+                <span>Operator: <strong style={{ color: 'var(--text-primary)' }}>{record.operator || record.verifiedBy || 'Processing Manager'}</strong></span>
               </div>
             </div>
           ))}
@@ -225,19 +214,20 @@ export const ProcessingPage: React.FC = () => {
       )}
 
       {/* Add Processing Record Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`Log Processing Step for ${selectedBatchId}`}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`Log Processing Step — ${selectedBatchId}`}>
         {formError && (
-          <div style={{ padding: '0.75rem', background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', borderRadius: 'var(--radius-md)', color: '#f43f5e', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          <div style={{ padding: '0.65rem 0.85rem', background: 'var(--status-danger-bg)', border: '1px solid var(--status-danger-border)', borderRadius: 'var(--radius-sm)', color: 'var(--status-danger)', fontSize: '0.825rem', marginBottom: '1rem' }}>
             {formError}
           </div>
         )}
         <form onSubmit={handleAddProcessingRecord} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Processing Operation</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Processing Operation</label>
             <select
               value={operation}
               onChange={(e) => setOperation(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#121824', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
               required
             >
               <option value="EXTRACTION">EXTRACTION</option>
@@ -249,42 +239,41 @@ export const ProcessingPage: React.FC = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Operator / Manager</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Operator Name</label>
               <input
                 type="text"
                 value={operator}
                 onChange={(e) => setOperator(e.target.value)}
-                style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+                className="form-control"
+                style={{ width: '100%' }}
                 required
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Manual Processing Temp (°C)</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Processing Temp (°C)</label>
               <input
                 type="number"
                 step="0.1"
                 value={processingTemperature}
                 onChange={(e) => setProcessingTemperature(parseFloat(e.target.value))}
-                style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+                className="form-control"
+                style={{ width: '100%' }}
                 required
               />
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Operation Notes & Observations</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Operation Description</label>
             <textarea
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter processing observations, filter mesh size, or temperature curve notes..."
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none', resize: 'vertical' }}
+              placeholder="Record processing details, filter mesh size, or temperature notes..."
+              className="form-control"
+              style={{ width: '100%', resize: 'vertical' }}
             />
-          </div>
-
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.03)', padding: '0.6rem 0.85rem', borderRadius: 'var(--radius-sm)' }}>
-            ℹ️ Temperature Source Label: <strong>Manual Processing Temperature</strong> (DHT22 is not a processing temperature sensor)
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
@@ -295,6 +284,6 @@ export const ProcessingPage: React.FC = () => {
           </div>
         </form>
       </Modal>
-    </MainLayout>
+    </>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MainLayout } from '../components/layout/MainLayout';
 import { PageHeader, StatusBadge, LoadingState, ErrorState } from '../components/common/UIComponents';
 import { getBatchById, getQualityTestsByBatchId, getProcessingRecordsByBatchId, getBatchTraceability, recallBatch, markBatchReadyForPackaging } from '../services/api';
 import { HoneyBatch, QualityTest, ProcessingRecord, TraceabilityEvent } from '../types';
@@ -77,19 +76,11 @@ export const BatchDetailPage: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <MainLayout>
-        <LoadingState message={`Fetching lifecycle details for ${batchId}...`} />
-      </MainLayout>
-    );
+    return <LoadingState message={`Fetching lifecycle details for ${batchId}...`} />;
   }
 
   if (error || !batch) {
-    return (
-      <MainLayout>
-        <ErrorState message={error || 'Batch not found'} onRetry={loadData} />
-      </MainLayout>
-    );
+    return <ErrorState message={error || 'Batch not found'} onRetry={loadData} />;
   }
 
   const timelineStages = [
@@ -120,7 +111,7 @@ export const BatchDetailPage: React.FC = () => {
   const latestQualityTest = qualityTests.length > 0 ? qualityTests[0] : null;
 
   return (
-    <MainLayout>
+    <>
       <div style={{ marginBottom: '1rem' }}>
         <button className="btn-secondary" onClick={() => navigate('/batches')} style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}>
           <ArrowLeft size={16} /> Back to Honey Batches
@@ -421,6 +412,6 @@ export const BatchDetailPage: React.FC = () => {
           )}
         </div>
       </div>
-    </MainLayout>
+    </>
   );
 };

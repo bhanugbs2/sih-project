@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { login as loginApi } from '../services/api';
-import { UserRole } from '../types';
 import { Eye, EyeOff, Lock, User, AlertCircle, RefreshCw, KeyRound, ShieldAlert } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
@@ -55,82 +54,77 @@ export const LoginPage: React.FC = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.15) 0%, rgba(10, 13, 20, 1) 70%)',
+      background: 'var(--bg-primary)',
       padding: '1.5rem'
     }}>
-      <div style={{ width: '100%', maxWidth: '460px' }}>
+      <div style={{ width: '100%', maxWidth: '420px' }}>
         {/* Branding Header */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
           <div style={{
-            width: '64px',
-            height: '64px',
-            margin: '0 auto 1rem auto',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
+            width: '52px',
+            height: '52px',
+            margin: '0 auto 0.85rem auto',
+            borderRadius: 'var(--radius-md)',
+            background: 'var(--honey-amber)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '2.2rem',
-            boxShadow: '0 8px 30px rgba(245, 158, 11, 0.4)'
+            fontSize: '1.6rem',
+            color: '#FFFFFF'
           }}>
             🍯
           </div>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: 0 }}>
-            Honey<span className="gradient-text">Chain</span>
+          <h1 style={{ fontSize: '1.85rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+            HoneyChain
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.925rem', marginTop: '0.35rem' }}>
-            Smart Beekeeping & Blockchain Honey Traceability
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+            Smart Beekeeping & Honey Traceability Platform
           </p>
         </div>
 
         {/* Login Form Panel */}
-        <div className="glass-panel" style={{ padding: '2.25rem' }}>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.35rem', color: 'var(--text-primary)' }}>
+        <div className="glass-panel" style={{ padding: '2rem', background: 'var(--bg-secondary)' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 600, marginBottom: '0.25rem', color: 'var(--text-primary)' }}>
             System Sign In
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-            Enter your credentials to access the secure dashboard.
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.825rem', marginBottom: '1.25rem' }}>
+            Enter your credentials to access your operational workspace.
           </p>
 
           {error && (
             <div style={{
-              padding: '0.85rem 1rem',
-              borderRadius: 'var(--radius-md)',
-              background: 'rgba(244, 63, 94, 0.12)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
-              color: 'var(--accent-rose)',
-              fontSize: '0.875rem',
+              padding: '0.75rem 0.85rem',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--status-danger-bg)',
+              border: '1px solid var(--status-danger-border)',
+              color: 'var(--status-danger)',
+              fontSize: '0.825rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.65rem',
+              gap: '0.5rem',
               marginBottom: '1.25rem'
             }}>
-              <AlertCircle size={18} style={{ flexShrink: 0 }} />
+              <AlertCircle size={16} style={{ flexShrink: 0 }} />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
                 Username or Email
               </label>
               <div style={{ position: 'relative' }}>
-                <User size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <User size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter username"
+                  className="form-control"
                   style={{
                     width: '100%',
-                    padding: '0.75rem 1rem 0.75rem 2.75rem',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: 'var(--radius-md)',
-                    color: 'var(--text-primary)',
-                    fontSize: '0.925rem',
-                    outline: 'none'
+                    paddingLeft: '2.5rem'
                   }}
                   required
                 />
@@ -138,25 +132,21 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
                 Password
               </label>
               <div style={{ position: 'relative' }}>
-                <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <Lock size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
+                  className="form-control"
                   style={{
                     width: '100%',
-                    padding: '0.75rem 2.75rem 0.75rem 2.75rem',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: 'var(--radius-md)',
-                    color: 'var(--text-primary)',
-                    fontSize: '0.925rem',
-                    outline: 'none'
+                    paddingLeft: '2.5rem',
+                    paddingRight: '2.5rem'
                   }}
                   required
                 />
@@ -165,7 +155,7 @@ export const LoginPage: React.FC = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   style={{
                     position: 'absolute',
-                    right: '1rem',
+                    right: '0.85rem',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     background: 'none',
@@ -174,7 +164,7 @@ export const LoginPage: React.FC = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
@@ -186,34 +176,33 @@ export const LoginPage: React.FC = () => {
               style={{
                 width: '100%',
                 justifyContent: 'center',
-                padding: '0.85rem',
-                fontSize: '0.95rem',
-                marginTop: '0.5rem',
-                opacity: loading ? 0.7 : 1
+                padding: '0.75rem',
+                fontSize: '0.9rem',
+                marginTop: '0.25rem'
               }}
             >
               {loading ? (
                 <>
-                  <RefreshCw size={18} className="animate-spin" style={{ animation: 'spin 1.2s linear infinite' }} />
+                  <RefreshCw size={16} className="animate-spin" style={{ animation: 'spin 1.2s linear infinite' }} />
                   <span>Authenticating...</span>
                 </>
               ) : (
                 <>
-                  <KeyRound size={18} />
-                  <span>Sign In to Dashboard</span>
+                  <KeyRound size={16} />
+                  <span>Sign In</span>
                 </>
               )}
             </button>
           </form>
 
           {/* Demo Credentials Section */}
-          <div style={{ marginTop: '2rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--honey-gold)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+          <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)', fontSize: '0.725rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.65rem' }}>
               <ShieldAlert size={14} />
-              <span>Development Demo Credentials</span>
+              <span>Select Demo Account</span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               <button
                 type="button"
                 onClick={() => handleSelectDemoAccount('admin', 'Admin@12345')}
@@ -221,20 +210,20 @@ export const LoginPage: React.FC = () => {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  padding: '0.55rem 0.75rem',
+                  padding: '0.45rem 0.65rem',
                   borderRadius: 'var(--radius-sm)',
-                  background: username === 'admin' ? 'rgba(139, 92, 246, 0.18)' : 'rgba(255, 255, 255, 0.03)',
-                  border: username === 'admin' ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: username === 'admin' ? 'var(--honey-amber-light)' : 'var(--bg-primary)',
+                  border: username === 'admin' ? '1px solid var(--honey-amber)' : '1px solid var(--border-color)',
                   cursor: 'pointer',
                   color: 'var(--text-primary)',
-                  fontSize: '0.825rem',
+                  fontSize: '0.8rem',
                   textAlign: 'left'
                 }}
               >
                 <div>
-                  <span style={{ fontWeight: 700, color: '#8b5cf6' }}>ADMIN:</span> admin / Admin@12345
+                  <span style={{ fontWeight: 600, color: 'var(--blockchain-purple)' }}>ADMIN:</span> admin / Admin@12345
                 </div>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Full Access</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Administrator</span>
               </button>
 
               <button
@@ -244,18 +233,18 @@ export const LoginPage: React.FC = () => {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  padding: '0.55rem 0.75rem',
+                  padding: '0.45rem 0.65rem',
                   borderRadius: 'var(--radius-sm)',
-                  background: username === 'beekeeper' ? 'rgba(16, 185, 129, 0.18)' : 'rgba(255, 255, 255, 0.03)',
-                  border: username === 'beekeeper' ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: username === 'beekeeper' ? 'var(--honey-amber-light)' : 'var(--bg-primary)',
+                  border: username === 'beekeeper' ? '1px solid var(--honey-amber)' : '1px solid var(--border-color)',
                   cursor: 'pointer',
                   color: 'var(--text-primary)',
-                  fontSize: '0.825rem',
+                  fontSize: '0.8rem',
                   textAlign: 'left'
                 }}
               >
                 <div>
-                  <span style={{ fontWeight: 700, color: '#10b981' }}>BEEKEEPER:</span> beekeeper / Beekeeper@12345
+                  <span style={{ fontWeight: 600, color: 'var(--status-success)' }}>BEEKEEPER:</span> beekeeper / Beekeeper@12345
                 </div>
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Apiary Operations</span>
               </button>
@@ -267,20 +256,20 @@ export const LoginPage: React.FC = () => {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  padding: '0.55rem 0.75rem',
+                  padding: '0.45rem 0.65rem',
                   borderRadius: 'var(--radius-sm)',
-                  background: username === 'inspector' ? 'rgba(6, 182, 212, 0.18)' : 'rgba(255, 255, 255, 0.03)',
-                  border: username === 'inspector' ? '1px solid rgba(6, 182, 212, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: username === 'inspector' ? 'var(--honey-amber-light)' : 'var(--bg-primary)',
+                  border: username === 'inspector' ? '1px solid var(--honey-amber)' : '1px solid var(--border-color)',
                   cursor: 'pointer',
                   color: 'var(--text-primary)',
-                  fontSize: '0.825rem',
+                  fontSize: '0.8rem',
                   textAlign: 'left'
                 }}
               >
                 <div>
-                  <span style={{ fontWeight: 700, color: '#06b6d4' }}>QUALITY INSPECTOR:</span> inspector / Inspector@12345
+                  <span style={{ fontWeight: 600, color: 'var(--status-info)' }}>INSPECTOR:</span> inspector / Inspector@12345
                 </div>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Lab Inspection</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Quality Testing</span>
               </button>
             </div>
           </div>

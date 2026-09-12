@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MainLayout } from '../components/layout/MainLayout';
 import { PageHeader, StatusBadge, LoadingState, EmptyState, ErrorState, Modal } from '../components/common/UIComponents';
 import { getAllHives, getAllFarms, createHive } from '../services/api';
-import { Hive, Farm, HiveStatus } from '../types';
+import { Hive, Farm } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { Boxes, Plus, Search, Filter, ArrowRight } from 'lucide-react';
 
@@ -90,67 +89,51 @@ export const HivesPage: React.FC = () => {
   });
 
   return (
-    <MainLayout>
+    <>
       <PageHeader
-        title="Smart Hive Management"
-        subtitle="Real-time IoT hive telemetry monitoring & operational status"
+        title="Hives Management"
+        subtitle="Operational monitoring and telemetry status across all registered apiary hives"
         actions={
           (role === 'ADMIN' || role === 'BEEKEEPER') ? (
             <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
-              <Plus size={18} /> Register New Hive
+              <Plus size={16} /> + Register New Hive
             </button>
           ) : undefined
         }
       />
 
       {/* Controls Bar */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: '1 1 260px' }}>
-          <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          <Search size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             type="text"
-            placeholder="Search hive ID, name, location..."
+            placeholder="Search by Hive ID, Name, Location..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.65rem 1rem 0.65rem 2.75rem',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-md)',
-              color: 'var(--text-primary)',
-              fontSize: '0.9rem',
-              outline: 'none'
-            }}
+            className="form-control"
+            style={{ width: '100%', paddingLeft: '2.5rem' }}
           />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Filter size={16} style={{ color: 'var(--text-muted)' }} />
+          <Filter size={15} style={{ color: 'var(--text-muted)' }} />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            style={{
-              padding: '0.65rem 1rem',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-md)',
-              color: 'var(--text-primary)',
-              fontSize: '0.9rem',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
+            className="form-control"
+            style={{ cursor: 'pointer' }}
           >
-            <option value="ALL" style={{ background: '#121824' }}>All Statuses</option>
-            <option value="ACTIVE" style={{ background: '#121824' }}>ACTIVE</option>
-            <option value="MAINTENANCE" style={{ background: '#121824' }}>MAINTENANCE</option>
-            <option value="INACTIVE" style={{ background: '#121824' }}>INACTIVE</option>
+            <option value="ALL">All Statuses</option>
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="MAINTENANCE">MAINTENANCE</option>
+            <option value="INACTIVE">INACTIVE</option>
           </select>
         </div>
       </div>
 
       {loading ? (
-        <LoadingState message="Loading hives telemetry..." />
+        <LoadingState message="Loading hives inventory..." />
       ) : error ? (
         <ErrorState message={error} onRetry={loadHivesData} />
       ) : filteredHives.length === 0 ? (
@@ -160,68 +143,81 @@ export const HivesPage: React.FC = () => {
           description={search ? 'No hives match your search criteria.' : 'No hives are currently registered in the system.'}
         />
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
-          {filteredHives.map((hive) => (
-            <div
-              key={hive.id}
-              className="glass-panel"
-              style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer' }}
-              onClick={() => navigate(`/hives/${hive.hiveId}`)}
-            >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--honey-gold)' }}>
-                    {hive.hiveId}
-                  </span>
-                  <StatusBadge status={hive.status} />
-                </div>
-
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 0.4rem 0' }}>
-                  {hive.name}
-                </h3>
-
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
-                  📍 {hive.farm ? hive.farm.name : hive.location || 'Location Not Specified'}
-                </p>
-              </div>
-
-              <div style={{ marginTop: '1.5rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
-                  View Live Telemetry Charts
-                </span>
-                <ArrowRight size={16} style={{ color: 'var(--honey-gold)' }} />
-              </div>
-            </div>
-          ))}
+        <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Hive ID</th>
+                  <th>Hive Name</th>
+                  <th>Apiary Farm</th>
+                  <th>Section Location</th>
+                  <th>AI Screening</th>
+                  <th>Operational Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredHives.map((hive) => (
+                  <tr key={hive.id} onClick={() => navigate(`/hives/${hive.hiveId}`)} style={{ cursor: 'pointer' }}>
+                    <td style={{ fontWeight: 600, color: 'var(--honey-brown)' }}>{hive.hiveId}</td>
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{hive.name}</td>
+                    <td style={{ color: 'var(--text-secondary)' }}>{hive.farm ? hive.farm.name : 'Himalayan Organic Apiary'}</td>
+                    <td style={{ color: 'var(--text-muted)' }}>{hive.location || 'Section A'}</td>
+                    <td>
+                      <span style={{ fontSize: '0.8rem', color: hive.status === 'ACTIVE' ? 'var(--status-success)' : 'var(--status-warning)', fontWeight: 500 }}>
+                        {hive.status === 'ACTIVE' ? 'AI Screening: Normal Pattern' : 'AI Screening: Needs Inspection'}
+                      </span>
+                    </td>
+                    <td><StatusBadge status={hive.status} /></td>
+                    <td>
+                      <button
+                        className="btn-secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/hives/${hive.hiveId}`);
+                        }}
+                        style={{ padding: '0.3rem 0.65rem', fontSize: '0.775rem' }}
+                      >
+                        View Telemetry <ArrowRight size={13} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* Register New Hive Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Register New Hive">
         {formError && (
-          <div style={{ padding: '0.75rem', background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', borderRadius: 'var(--radius-md)', color: '#f43f5e', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          <div style={{ padding: '0.65rem 0.85rem', background: 'var(--status-danger-bg)', border: '1px solid var(--status-danger-border)', borderRadius: 'var(--radius-sm)', color: 'var(--status-danger)', fontSize: '0.825rem', marginBottom: '1rem' }}>
             {formError}
           </div>
         )}
         <form onSubmit={handleCreateHive} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Hive Code / ID</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Hive Serial ID</label>
             <input
               type="text"
               placeholder="e.g. HIVE-HIM-004"
               value={newHiveId}
               onChange={(e) => setNewHiveId(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
               required
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Select Apiary Farm</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Apiary Farm</label>
             <select
               value={selectedFarmId}
               onChange={(e) => setSelectedFarmId(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#121824', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
               required
             >
               {farms.map((f) => (
@@ -231,36 +227,38 @@ export const HivesPage: React.FC = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Hive Name</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Hive Designation Name</label>
             <input
               type="text"
               placeholder="e.g. South Ridge Hive #4"
               value={newHiveName}
               onChange={(e) => setNewHiveName(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
               required
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Location / Section</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Section / Location</label>
             <input
               type="text"
               placeholder="e.g. Section C, Row 2"
               value={newLocation}
               onChange={(e) => setNewLocation(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
             />
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Cancel</button>
             <button type="submit" className="btn-primary" disabled={creating}>
-              {creating ? 'Saving...' : 'Create Hive'}
+              {creating ? 'Saving...' : 'Register Hive'}
             </button>
           </div>
         </form>
       </Modal>
-    </MainLayout>
+    </>
   );
 };

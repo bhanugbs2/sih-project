@@ -71,15 +71,26 @@ public class VerificationService {
                     .filter(bEvt -> traceabilityEvents.stream().noneMatch(pEvt -> pEvt.getId().equals(bEvt.getId())))
                     .collect(Collectors.toList());
             traceabilityEvents.addAll(batchEvents);
-            traceabilityEvents.sort(java.util.Comparator.comparing(TraceabilityEventResponse::getTimestamp));
+
+            // Sort chronologically by timestamp, secondary sort by lifecycle rank
+            traceabilityEvents.sort(java.util.Comparator
+                    .comparing(TraceabilityEventResponse::getTimestamp, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()))
+                    .thenComparingInt(evt -> getLifecycleRank(evt.getEventType())));
         }
 
         String verificationStatus = "PENDING";
         if (traceabilityEvents != null && !traceabilityEvents.isEmpty()) {
+            boolean allAnchored = traceabilityEvents.stream()
+                    .allMatch(e -> e.getBlockchainStatus() != null && "BLOCKCHAIN_ANCHORED".equalsIgnoreCase(e.getBlockchainStatus().name()));
             boolean anyAnchored = traceabilityEvents.stream()
                     .anyMatch(e -> e.getBlockchainStatus() != null && "BLOCKCHAIN_ANCHORED".equalsIgnoreCase(e.getBlockchainStatus().name()));
-            if (anyAnchored) {
+
+            if (allAnchored) {
                 verificationStatus = "VERIFIED";
+            } else if (anyAnchored) {
+                verificationStatus = "PARTIALLY_VERIFIED";
+            } else {
+                verificationStatus = "OFF_CHAIN_VERIFIED";
             }
         }
 
@@ -93,5 +104,21 @@ public class VerificationService {
                 traceabilityEvents,
                 verificationStatus
         );
+    }
+
+    private int getLifecycleRank(com.nexora.honeychain.model.enums.TraceabilityEventType type) {
+        if (type == null) return 99;
+        switch (type) {
+            case HARVESTED: return 1;
+            case QUALITY_TESTED: return 2;
+            case QUALITY_VERIFIED: return 3;
+            case AI_SCREENED: return 4;
+            case PROCESSING: return 5;
+            case PROCESSED: return 6;
+            case READY_FOR_PACKAGING: return 7;
+            case PACKAGED: return 8;
+            case VERIFIED: return 9;
+            default: return 50;
+        }
     }
 }

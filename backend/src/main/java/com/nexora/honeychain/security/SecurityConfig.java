@@ -30,7 +30,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:3000}")
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:3000,http://localhost:80,http://127.0.0.1:5173,http://192.168.0.144:5173}")
     private String[] allowedOrigins;
 
     public SecurityConfig(
@@ -91,9 +91,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*", "http://192.168.*:*", "http://10.*:*"));
         configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", "X-IoT-API-Key"));
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 

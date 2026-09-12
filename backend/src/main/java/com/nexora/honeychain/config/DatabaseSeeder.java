@@ -65,9 +65,12 @@ public class DatabaseSeeder implements CommandLineRunner {
         seedDemoUsers();
 
         if (farmRepository.count() > 0) {
-            log.info("DEMO DATA ALREADY PRESENT - Skipping initial farm/hive seeding.");
+            log.info("DEMO DATA ALREADY PRESENT - Checking for missing demo batches & cleaning obsolete packages.");
+            seedMissingDemoBatches();
+            cleanupObsoleteDemoPackages();
             return;
         }
+
 
         log.info("=== GENERATING DEMO DATA FOR HONEYCHAIN DATA FOUNDATION & PHASE 7 WORKFLOW ===");
 
@@ -263,4 +266,89 @@ public class DatabaseSeeder implements CommandLineRunner {
             log.info("Created DEMO Quality Inspector user: inspector / Inspector@12345");
         }
     }
+
+    private void seedMissingDemoBatches() {
+        Hive hive1 = hiveRepository.findByHiveId("HIVE-HIM-001").orElse(null);
+        Hive hive2 = hiveRepository.findByHiveId("HIVE-HIM-002").orElse(null);
+        Hive hive0 = hiveRepository.findByHiveId("hive-001").orElse(null);
+
+        if (hive1 == null) return;
+        Instant now = Instant.now();
+
+        if (honeyBatchRepository.findByBatchId("HC-BATCH-2026-VALLEY-12").isEmpty()) {
+            HoneyBatch batch12 = honeyBatchRepository.save(new HoneyBatch(
+                    "HC-BATCH-2026-VALLEY-12",
+                    hive1,
+                    LocalDate.of(2026, 9, 8),
+                    380.0,
+                    "kg",
+                    "High-purity mountain clover bloom harvest.",
+                    "Manual Harvest Quantity",
+                    HoneyBatchStatus.READY_FOR_PACKAGING
+            ));
+            qualityTestRepository.save(new QualityTest(batch12, 16.5, 3.88, "Amber Gold", "Passed full laboratory screening.", QualityTestResult.PASS, "Lab Analyst S. Verma - Cert #8895", now.minus(3, ChronoUnit.DAYS)));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch12, null, TraceabilityEventType.HARVESTED, "HASH-HARVEST-" + batch12.getBatchId(), now.minus(5, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch12, null, TraceabilityEventType.QUALITY_TESTED, "HASH-QUALITY-PASS-" + batch12.getBatchId(), now.minus(4, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch12, null, TraceabilityEventType.AI_SCREENED, "HASH-AI-PURE-" + batch12.getBatchId(), now.minus(4, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch12, null, TraceabilityEventType.PROCESSED, "HASH-PROCESS-FILTRATION-" + batch12.getBatchId(), now.minus(3, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch12, null, TraceabilityEventType.READY_FOR_PACKAGING, "HASH-READY-FOR-PACKAGING-" + batch12.getBatchId(), now.minus(2, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            log.info("Seeded demo batch: HC-BATCH-2026-VALLEY-12 (READY_FOR_PACKAGING)");
+        }
+
+        if (honeyBatchRepository.findByBatchId("HC-BATCH-2026-VALLEY-13").isEmpty()) {
+            HoneyBatch batch13 = honeyBatchRepository.save(new HoneyBatch(
+                    "HC-BATCH-2026-VALLEY-13",
+                    hive2 != null ? hive2 : hive1,
+                    LocalDate.of(2026, 9, 9),
+                    290.0,
+                    "kg",
+                    "Wildflower and forest flora extraction.",
+                    "Manual Harvest Quantity",
+                    HoneyBatchStatus.READY_FOR_PACKAGING
+            ));
+            qualityTestRepository.save(new QualityTest(batch13, 17.1, 3.92, "Light Amber", "Passed full laboratory screening.", QualityTestResult.PASS, "Lab Analyst S. Verma - Cert #8896", now.minus(2, ChronoUnit.DAYS)));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch13, null, TraceabilityEventType.HARVESTED, "HASH-HARVEST-" + batch13.getBatchId(), now.minus(4, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch13, null, TraceabilityEventType.QUALITY_TESTED, "HASH-QUALITY-PASS-" + batch13.getBatchId(), now.minus(3, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch13, null, TraceabilityEventType.AI_SCREENED, "HASH-AI-PURE-" + batch13.getBatchId(), now.minus(3, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch13, null, TraceabilityEventType.PROCESSED, "HASH-PROCESS-EXTRACTION-" + batch13.getBatchId(), now.minus(2, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch13, null, TraceabilityEventType.READY_FOR_PACKAGING, "HASH-READY-FOR-PACKAGING-" + batch13.getBatchId(), now.minus(1, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            log.info("Seeded demo batch: HC-BATCH-2026-VALLEY-13 (READY_FOR_PACKAGING)");
+        }
+
+        if (honeyBatchRepository.findByBatchId("HC-BATCH-2026-VALLEY-14").isEmpty()) {
+            HoneyBatch batch14 = honeyBatchRepository.save(new HoneyBatch(
+                    "HC-BATCH-2026-VALLEY-14",
+                    hive0 != null ? hive0 : hive1,
+                    LocalDate.of(2026, 9, 10),
+                    410.0,
+                    "kg",
+                    "Late season organic acacia honey harvest.",
+                    "Manual Harvest Quantity",
+                    HoneyBatchStatus.READY_FOR_PACKAGING
+            ));
+            qualityTestRepository.save(new QualityTest(batch14, 16.0, 4.05, "Golden Blossom", "Passed full laboratory screening.", QualityTestResult.PASS, "Inspector M. Kumar - Cert #9908", now.minus(1, ChronoUnit.DAYS)));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch14, null, TraceabilityEventType.HARVESTED, "HASH-HARVEST-" + batch14.getBatchId(), now.minus(3, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch14, null, TraceabilityEventType.QUALITY_TESTED, "HASH-QUALITY-PASS-" + batch14.getBatchId(), now.minus(2, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch14, null, TraceabilityEventType.AI_SCREENED, "HASH-AI-PURE-" + batch14.getBatchId(), now.minus(2, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch14, null, TraceabilityEventType.PROCESSED, "HASH-PROCESS-PASTEURIZATION-" + batch14.getBatchId(), now.minus(1, ChronoUnit.DAYS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            traceabilityEventRepository.save(new TraceabilityEvent(batch14, null, TraceabilityEventType.READY_FOR_PACKAGING, "HASH-READY-FOR-PACKAGING-" + batch14.getBatchId(), now.minus(12, ChronoUnit.HOURS), "PENDING", BlockchainEnvironment.DEVELOPMENT));
+            log.info("Seeded demo batch: HC-BATCH-2026-VALLEY-14 (READY_FOR_PACKAGING)");
+        }
+    }
+
+    private void cleanupObsoleteDemoPackages() {
+        java.util.List<Package> packages = packageRepository.findAll();
+        for (Package pkg : packages) {
+            if (!"HC-PKG-2026-001".equals(pkg.getPackageId())) {
+                log.info("Cleaning up demo package record from database: {}", pkg.getPackageId());
+                java.util.List<TraceabilityEvent> events = traceabilityEventRepository.findByPackageEntityPackageId(pkg.getPackageId());
+                for (TraceabilityEvent evt : events) {
+                    evt.setPackageEntity(null);
+                    traceabilityEventRepository.save(evt);
+                }
+                packageRepository.delete(pkg);
+            }
+        }
+    }
 }
+

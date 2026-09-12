@@ -27,7 +27,7 @@ public class PackageController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BEEKEEPER')")
     @Operation(summary = "Create consumer package", description = "Creates a unique retail package linked to a honey batch.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Package created successfully"),
@@ -40,8 +40,17 @@ public class PackageController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR')")
+    @Operation(summary = "Get all consumer packages", description = "Retrieves all serialized retail packages.")
+    @ApiResponse(responseCode = "200", description = "Packages retrieved successfully")
+    public ResponseEntity<java.util.List<PackageResponse>> getAllPackages() {
+        return ResponseEntity.ok(packageService.getAllPackages());
+    }
+
     @GetMapping("/{packageId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BEEKEEPER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BEEKEEPER', 'QUALITY_INSPECTOR')")
     @Operation(summary = "Get package by ID", description = "Retrieves retail package information by packageId.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Package found"),
@@ -51,4 +60,5 @@ public class PackageController {
         return ResponseEntity.ok(packageService.getPackageByPackageId(packageId));
     }
 }
+
 

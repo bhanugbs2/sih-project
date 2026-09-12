@@ -38,8 +38,39 @@ public class PackageService {
         HoneyBatch batch = honeyBatchRepository.findByBatchId(request.getBatchId())
                 .orElseThrow(() -> new ResourceNotFoundException("Batch not found: " + request.getBatchId()));
 
+        if (batch.getStatus() == HoneyBatchStatus.REQUIRES_REVIEW || batch.getStatus() == HoneyBatchStatus.RECALLED) {
+            throw new IllegalStateException("Packaging blocked: Batch " + request.getBatchId() + " has status " + batch.getStatus() + ". Batches under review or recalled cannot be serialized into consumer packages.");
+        }
+
         if (packageRepository.findByPackageId(request.getPackageId()).isPresent()) {
             throw new ResourceAlreadyExistsException("Package with packageId already exists: " + request.getPackageId());
+        }
+
+
+
+        // Validate required prerequisite traceability lifecycle events
+        java.util.List<TraceabilityEvent> existingEvents = traceabilityEventRepository.findByBatchBatchId(batch.getBatchId());
+        java.util.Set<TraceabilityEventType> presentEventTypes = existingEvents.stream()
+                .map(TraceabilityEvent::getEventType)
+                .collect(Collectors.toSet());
+
+        TraceabilityEventType[] requiredTypes = new TraceabilityEventType[]{
+                TraceabilityEventType.HARVESTED,
+                TraceabilityEventType.QUALITY_TESTED,
+                TraceabilityEventType.AI_SCREENED,
+                TraceabilityEventType.PROCESSED,
+                TraceabilityEventType.READY_FOR_PACKAGING
+        };
+
+        java.util.List<String> missingStages = new java.util.ArrayList<>();
+        for (TraceabilityEventType required : requiredTypes) {
+            if (!presentEventTypes.contains(required)) {
+                missingStages.add(required.name());
+            }
+        }
+
+        if (!missingStages.isEmpty()) {
+            throw new IllegalStateException("Package creation unavailable — this batch has incomplete traceability records. Missing traceability stages: " + String.join(", ", missingStages));
         }
 
         Package pkg = DtoMapper.toPackageEntity(request, batch);
@@ -64,9 +95,17 @@ public class PackageService {
     }
 
     @Transactional(readOnly = true)
+    public java.util.List<PackageResponse> getAllPackages() {
+        return packageRepository.findAll().stream()
+                .map(DtoMapper::toPackageResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public PackageResponse getPackageByPackageId(String packageId) {
         Package pkg = packageRepository.findByPackageId(packageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Package not found: " + packageId));
         return DtoMapper.toPackageResponse(pkg);
     }
 }
+

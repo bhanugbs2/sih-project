@@ -169,4 +169,18 @@ HoneyChain uses **Spring Security**, **JWT (HS256)**, and **BCrypt Password Hash
 - **Spring Boot Integration Tests**: 88/88 Passed (`.\mvnw.cmd test`)
 - **React Frontend Build**: Passed (`npm run build`)
 - **Flutter Mobile App Tests**: 13/13 Passed (`flutter test`)
-- **Flutter APK Build**: Debug APK generated (`flutter build apk --debug`)
+- **Flutter APK Build**: Release APK generated (`flutter build apk --release`)
+
+---
+
+## 📱 Android APK
+
+HoneyChain Android application can be downloaded from the GitHub Releases page.
+
+### Download & Installation Instructions
+
+1. Open **Releases** on the GitHub repository (`https://github.com/bhanugbs2/sih-project/releases`).
+2. Download the latest release APK (`HoneyChain-v1.0.0.apk`).
+3. Install the APK on an Android device (enable "Install from Unknown Sources" if prompted).
+4. Launch **HoneyChain** on your device. Make sure the phone and HoneyChain backend are reachable on the same local network when using a local LAN backend (e.g., `http://192.168.x.x:8080`).
+

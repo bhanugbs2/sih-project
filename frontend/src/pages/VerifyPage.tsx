@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ShieldCheck, Search, CheckCircle2, AlertTriangle, MapPin, Flower2, 
-  Award, Hexagon, CheckCircle, Database, Layers, FileText
+  Award, CheckCircle, Database, Layers, FileText
 } from 'lucide-react';
 import { verifyPackage } from '../services/api';
 import { VerificationResult } from '../types';
+import { StatusBadge } from '../components/common/UIComponents';
 
 export const VerifyPage: React.FC = () => {
   const { packageId: routePackageId } = useParams<{ packageId?: string }>();
@@ -54,221 +55,220 @@ export const VerifyPage: React.FC = () => {
         minHeight: '100vh',
         backgroundColor: 'var(--bg-primary)',
         color: 'var(--text-primary)',
-        padding: '2rem 1rem',
-        backgroundImage: 'radial-gradient(circle at 50% 10%, rgba(245, 158, 11, 0.15) 0%, transparent 60%)',
+        padding: '2rem 1rem'
       }}
     >
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '860px', margin: '0 auto' }}>
         
         {/* Top Navbar Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <div
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
+                width: '36px',
+                height: '36px',
+                borderRadius: 'var(--radius-sm)',
+                background: 'var(--honey-amber)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#000',
-                boxShadow: '0 0 15px var(--honey-glow)',
+                color: '#FFFFFF',
+                fontWeight: 800,
+                fontSize: '1.1rem'
               }}
             >
-              <Hexagon size={24} strokeWidth={2.5} />
+              🍯
             </div>
             <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-                Honey<span className="gradient-text">Chain</span>
+              <div style={{ fontSize: '1.15rem', fontWeight: 700, lineHeight: 1.2, color: 'var(--text-primary)' }}>
+                HoneyChain
               </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                PUBLIC HONEY VERIFICATION PORTAL
+              <div style={{ fontSize: '0.675rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Customer Verification Portal
               </div>
             </div>
           </div>
 
-          <Link to="/login" className="btn-secondary" style={{ fontSize: '0.85rem', padding: '0.4rem 0.9rem' }}>
-            Sign In to Portal
+          <Link to="/login" className="btn-secondary" style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}>
+            Operator Sign In
           </Link>
         </div>
 
         {/* Hero & Search Header */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '2.25rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>
-            Verify Pure <span className="gradient-text">Honey Lineage</span>
+        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+          <h1 style={{ fontSize: '1.85rem', fontWeight: 700, marginBottom: '0.35rem', color: 'var(--text-primary)' }}>
+            Honey Digital Passport
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: '600px', margin: '0 auto' }}>
-            Scan or enter your product package ID to inspect end-to-end apiary origin, lab quality analysis, and cryptographic blockchain audit trail.
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '600px', margin: '0 auto' }}>
+            Scan or enter a package serial ID to inspect verified farm-to-table lineage and blockchain ledger proofs.
           </p>
         </div>
 
         {/* Search Input Card */}
-        <form onSubmit={handleSearchSubmit} className="glass-panel" style={{ padding: '1.25rem', display: 'flex', gap: '0.75rem', marginBottom: '2rem' }}>
+        <form onSubmit={handleSearchSubmit} className="glass-panel" style={{ padding: '1rem 1.25rem', display: 'flex', gap: '0.75rem', marginBottom: '1.75rem' }}>
           <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
-            <Search size={18} style={{ position: 'absolute', left: '14px', color: 'var(--text-muted)' }} />
+            <Search size={16} style={{ position: 'absolute', left: '0.85rem', color: 'var(--text-muted)' }} />
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Enter Package ID (e.g., PKG-2026-88912 or PKG-001)"
+              placeholder="Enter Package ID (e.g., HC-PKG-2026-001)"
+              className="form-control"
               style={{
                 width: '100%',
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--radius-md)',
-                padding: '0.75rem 1rem 0.75rem 2.6rem',
-                color: 'var(--text-primary)',
-                fontSize: '1rem',
-                outline: 'none',
+                paddingLeft: '2.5rem',
+                fontSize: '0.925rem'
               }}
             />
           </div>
-          <button type="submit" className="btn-primary" disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-            <ShieldCheck size={18} /> {loading ? 'Verifying...' : 'Verify Product'}
+          <button type="submit" className="btn-primary" disabled={loading} style={{ paddingLeft: '1.25rem', paddingRight: '1.25rem' }}>
+            <ShieldCheck size={16} /> {loading ? 'Verifying...' : 'Verify Record'}
           </button>
         </form>
 
         {/* Loading State */}
         {loading && (
-          <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center' }}>
-            <div className="spinner" style={{ margin: '0 auto 1rem' }} />
-            <p style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Fetching supply chain lineage from HoneyChain ledger...</p>
+          <div className="glass-panel" style={{ padding: '2.5rem', textAlign: 'center' }}>
+            <p style={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>Retrieving traceability lineage from HoneyChain backend...</p>
           </div>
         )}
 
         {/* Error State */}
         {!loading && error && (
-          <div className="glass-panel" style={{ padding: '2.5rem', textAlign: 'center', borderColor: 'rgba(239, 68, 68, 0.4)', backgroundColor: 'rgba(239, 68, 68, 0.05)' }}>
-            <AlertTriangle size={48} style={{ color: '#ef4444', margin: '0 auto 1rem' }} />
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Verification Record Not Found</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem', maxWidth: '500px', margin: '0 auto 1.5rem' }}>
+          <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', borderColor: 'var(--status-danger-border)', backgroundColor: 'var(--status-danger-bg)' }}>
+            <AlertTriangle size={36} style={{ color: 'var(--status-danger)', margin: '0 auto 0.75rem' }} />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.35rem', color: 'var(--status-danger)' }}>Verification Record Not Found</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', maxWidth: '480px', margin: '0 auto 1rem' }}>
               {error}
             </p>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              Tip: Verify the package code on your jar. Sample test codes: PKG-001, PKG-1001, or PKG-2026-88912.
-            </div>
           </div>
         )}
 
-        {/* Results View */}
+        {/* Verification Results */}
         {!loading && result && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
-            {/* Authenticity Certificate Banner */}
-            <div className="glass-panel" style={{ padding: '1.75rem', borderColor: 'rgba(16, 185, 129, 0.3)', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%)' }}>
+            {/* Traceability Verified Header Banner */}
+            <div className="glass-panel" style={{ padding: '1.5rem', borderColor: 'var(--status-success-border)', background: 'var(--status-success-bg)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                  <span className="badge badge-success" style={{ fontSize: '0.85rem', padding: '0.4rem 0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <CheckCircle2 size={16} /> Blockchain Record Verified
+                  <span className="badge badge-success" style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem' }}>
+                    <CheckCircle2 size={14} /> TRACEABILITY RECORD VERIFIED
                   </span>
-                  <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginTop: '0.75rem', letterSpacing: '-0.01em' }}>
-                    Package #{result.package?.packageId || searchedId}
+                  <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginTop: '0.5rem', color: 'var(--text-primary)' }}>
+                    Honey Digital Passport #{result.package?.packageId || searchedId}
                   </h2>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
-                    Traceability record verified against the recorded blockchain hash. &bull; Batch: <strong style={{ color: 'var(--honey-gold)' }}>{result.batch?.batchId || result.package?.batchId || 'N/A'}</strong>
+                    Linked Honey Batch: <strong style={{ color: 'var(--honey-brown)' }}>{result.batch?.batchId || result.package?.batchId || 'N/A'}</strong>
                   </p>
                 </div>
 
-                <div style={{ textAlign: 'right', background: 'rgba(0, 0, 0, 0.3)', padding: '0.75rem 1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    EVM BLOCKCHAIN PROOF
+                <div style={{ textAlign: 'right', background: 'var(--bg-secondary)', padding: '0.65rem 1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '0.675rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
+                    BLOCKCHAIN VERIFICATION
                   </div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: result.blockchainVerificationStatus === 'VERIFIED' ? 'var(--accent-emerald)' : 'var(--honey-gold)', marginTop: '0.2rem' }}>
-                    {result.blockchainVerificationStatus === 'VERIFIED' ? '✓ ANCHORED ON-CHAIN' : 'OFF-CHAIN VERIFIED'}
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: result.blockchainVerificationStatus === 'VERIFIED' ? 'var(--status-success)' : 'var(--honey-brown)', marginTop: '0.15rem' }}>
+                    {result.blockchainVerificationStatus === 'VERIFIED'
+                      ? '✓ ANCHORED ON-CHAIN'
+                      : result.blockchainVerificationStatus === 'PARTIALLY_VERIFIED'
+                      ? 'PARTIALLY VERIFIED'
+                      : 'OFF-CHAIN VERIFIED'}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Origin & Farm Details */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
-              {/* Farm Info */}
-              <div className="glass-panel" style={{ padding: '1.25rem' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <MapPin size={16} style={{ color: 'var(--honey-gold)' }} /> Apiary & Farm Origin
+            {/* Traceability Disclaimer */}
+            <div className="glass-panel" style={{ padding: '0.85rem 1rem', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                <strong>Traceability & Authenticity Notice:</strong> Blockchain verifies the integrity of recorded supply chain events and chain-of-custody lineage. Chemical purity verification requires laboratory testing.
+              </div>
+            </div>
+
+            {/* Origin & Harvest Details */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+              <div className="glass-panel" style={{ padding: '1.15rem' }}>
+                <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <MapPin size={15} style={{ color: 'var(--honey-amber)' }} /> Apiary & Farm Origin
                 </div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                  {result.farm?.name || 'HoneyChain Certified Farm'}
+                <div style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.2rem', color: 'var(--text-primary)' }}>
+                  {result.farm?.name || 'Himalayan Organic Apiary'}
                 </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  Location: {result.farm?.location || 'Mountain Apiary Region'}
+                <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
+                  Location: {result.farm?.location || 'Himachal Pradesh, India'}
                 </div>
                 {result.hive && (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
-                    Source Hive: <strong>{result.hive.name || result.hive.hiveId}</strong> ({result.hive.location || 'Section A'})
+                  <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', marginTop: '0.4rem', paddingTop: '0.4rem', borderTop: '1px solid var(--border-color)' }}>
+                    Source Hive: <strong style={{ color: 'var(--text-primary)' }}>{result.hive.name || result.hive.hiveId}</strong>
                   </div>
                 )}
               </div>
 
-              {/* Harvest & Floral Info */}
-              <div className="glass-panel" style={{ padding: '1.25rem' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <Flower2 size={16} style={{ color: 'var(--honey-bright)' }} /> Harvest Lineage
+              <div className="glass-panel" style={{ padding: '1.15rem' }}>
+                <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <Flower2 size={15} style={{ color: 'var(--honey-amber)' }} /> Harvest Lineage
                 </div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                  Batch Code: {result.batch?.batchId || 'Pure Organic Honey'}
+                <div style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.2rem', color: 'var(--text-primary)' }}>
+                  Batch Code: {result.batch?.batchId || 'N/A'}
                 </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  Harvest Date: {result.batch?.harvestDate ? new Date(result.batch.harvestDate).toLocaleDateString() : 'Recent Harvest'}
+                <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
+                  Harvest Date: {result.batch?.harvestDate ? new Date(result.batch.harvestDate).toLocaleDateString() : 'Recorded Harvest'}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
-                  Quantity: {result.batch?.quantity || 'N/A'} {result.batch?.unit || 'kg'}
+                <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', marginTop: '0.4rem', paddingTop: '0.4rem', borderTop: '1px solid var(--border-color)' }}>
+                  Batch Quantity: {result.batch?.quantity || 'N/A'} {result.batch?.unit || 'kg'}
                 </div>
               </div>
             </div>
 
-            {/* Quality Test Results */}
-            <div className="glass-panel" style={{ padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Award size={20} style={{ color: 'var(--honey-bright)' }} /> Laboratory Quality Analysis
+            {/* Laboratory Quality Results */}
+            <div className="glass-panel" style={{ padding: '1.25rem' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Award size={18} style={{ color: 'var(--honey-amber)' }} /> Laboratory Quality Analysis
               </h3>
               {result.qualityTests && result.qualityTests.length > 0 ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem' }}>
                   {result.qualityTests.map((q) => (
-                    <div key={q.id} style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>TEST RESULT</span>
-                        <span className={`badge ${q.result === 'PASS' ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '0.7rem' }}>
-                          {q.result}
-                        </span>
+                    <div key={q.id} style={{ background: 'var(--bg-primary)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                        <span style={{ fontSize: '0.725rem', fontWeight: 600, color: 'var(--text-muted)' }}>RESULT</span>
+                        <StatusBadge status={q.result} />
                       </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        <div>Moisture: <strong>{q.moisture != null ? `${q.moisture}%` : 'N/A'}</strong></div>
-                        <div>pH Level: <strong>{q.ph != null ? q.ph : 'N/A'}</strong></div>
-                        <div>Color Score: <strong>{q.color || 'Standard Amber'}</strong></div>
+                      <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
+                        <div>Moisture: <strong>{q.moisture != null ? `${q.moisture}%` : 'Not recorded'}</strong></div>
+                        <div>pH Level: <strong>{q.ph != null ? q.ph : 'Not recorded'}</strong></div>
+                        <div>Color Grade: <strong>{q.color || 'Amber Gold'}</strong></div>
                       </div>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-                        Verified by: {q.verifiedBy || 'Certified Lab Inspector'}
+                      <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
+                        Certified by: {q.verifiedBy || 'Lab Inspector'}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic' }}>
-                  Quality test details recorded in supply chain ledger. Standard compliance verified.
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontStyle: 'italic' }}>
+                  No laboratory quality test records filed for this batch.
                 </div>
               )}
             </div>
 
-            {/* Processing History */}
+            {/* Processing Lineage */}
             {result.processingRecords && result.processingRecords.length > 0 && (
-              <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Layers size={20} style={{ color: 'var(--accent-cyan)' }} /> Processing Lineage
+              <div className="glass-panel" style={{ padding: '1.25rem' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Layers size={18} style={{ color: 'var(--status-info)' }} /> Processing Lineage Log
                 </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {result.processingRecords.map((pr) => (
-                    <div key={pr.id} style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div key={pr.id} style={{ background: 'var(--bg-primary)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
-                        <span className="badge badge-info" style={{ fontSize: '0.75rem', marginBottom: '0.25rem' }}>
-                          {pr.processType}
+                        <span className="badge badge-info" style={{ fontSize: '0.7rem', marginBottom: '0.2rem' }}>
+                          {pr.processType || pr.operation}
                         </span>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{pr.description || 'Standard honey processing operation'}</div>
+                        <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>{pr.description || 'Standard honey processing operation'}</div>
                       </div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'right' }}>
-                        <div>{new Date(pr.timestamp).toLocaleDateString()}</div>
-                        <div>Verified: {pr.verifiedBy || 'System'}</div>
+                        <div>{pr.timestamp ? new Date(pr.timestamp).toLocaleDateString() : 'N/A'}</div>
+                        <div>Operator: {pr.operator || pr.verifiedBy || 'Processing Manager'}</div>
                       </div>
                     </div>
                   ))}
@@ -276,49 +276,50 @@ export const VerifyPage: React.FC = () => {
               </div>
             )}
 
-            {/* Traceability Events Timeline */}
-            <div className="glass-panel" style={{ padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Database size={20} style={{ color: 'var(--accent-violet)' }} /> Cryptographic Supply Chain Ledger
+            {/* Cryptographic Supply Chain Ledger */}
+            <div className="glass-panel" style={{ padding: '1.25rem' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Database size={18} style={{ color: 'var(--blockchain-purple)' }} /> Cryptographic Supply Chain Ledger
               </h3>
               {result.traceabilityEvents && result.traceabilityEvents.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {result.traceabilityEvents.map((evt, idx) => (
-                    <div key={evt.id || idx} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(139, 92, 246, 0.2)', border: '1px solid var(--accent-violet)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-violet)' }}>
-                          <CheckCircle size={16} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {result.traceabilityEvents.map((evt, idx) => {
+                    const isTxHash = evt.blockchainTransactionHash && evt.blockchainTransactionHash.startsWith('0x');
+                    return (
+                      <div key={evt.id || idx} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: isTxHash ? 'var(--status-success-bg)' : 'var(--bg-primary)', border: isTxHash ? '1px solid var(--status-success)' : '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isTxHash ? 'var(--status-success)' : 'var(--text-muted)' }}>
+                            <CheckCircle size={14} />
+                          </div>
                         </div>
-                        {idx < (result.traceabilityEvents?.length || 0) - 1 && (
-                          <div style={{ width: '2px', height: '40px', background: 'var(--border-color)', margin: '4px 0' }} />
-                        )}
+                        <div style={{ flex: 1, background: 'var(--bg-primary)', padding: '0.75rem 0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                            <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--honey-brown)' }}>{evt.eventType}</span>
+                            <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>{evt.timestamp ? new Date(evt.timestamp).toLocaleString() : 'Not recorded'}</span>
+                          </div>
+                          <div style={{ fontSize: '0.725rem', fontFamily: 'monospace', color: 'var(--text-secondary)', background: 'var(--bg-secondary)', padding: '0.3rem 0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                            Data Hash (SHA-256): {evt.eventDataHash || 'Not recorded'}
+                          </div>
+                          {isTxHash && (
+                            <div style={{ fontSize: '0.725rem', fontFamily: 'monospace', color: 'var(--status-success)', marginTop: '0.25rem' }}>
+                              EVM Transaction Hash: {evt.blockchainTransactionHash}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div style={{ flex: 1, background: 'rgba(255, 255, 255, 0.02)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                          <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--honey-gold)' }}>{evt.eventType}</span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date(evt.timestamp).toLocaleString()}</span>
-                        </div>
-                        <div style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--text-secondary)', background: 'rgba(0, 0, 0, 0.3)', padding: '0.35rem 0.5rem', borderRadius: '4px', overflowX: 'auto' }}>
-                          Hash: {evt.eventDataHash}
-                        </div>
-                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.35rem', display: 'flex', justifyContent: 'space-between' }}>
-                          <span>Env: {evt.environment}</span>
-                          <span>Reference: {evt.blockchainReference || 'Pending Blockchain Verification'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                  Traceability events recorded on ledger.
+                  No traceability events recorded on ledger.
                 </div>
               )}
             </div>
 
-            {/* Footer Prompt */}
-            <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', padding: '1rem 0' }}>
-              HoneyChain Digital Supply Chain Ledger &bull; Tamper-Evident Traceability Anchoring
+            {/* Footer */}
+            <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', padding: '0.75rem 0' }}>
+              HoneyChain Digital Supply Chain Ledger &bull; Immutable Traceability Integrity
             </div>
 
           </div>
@@ -326,11 +327,11 @@ export const VerifyPage: React.FC = () => {
 
         {/* Initial Prompt state if no search performed yet */}
         {!loading && !result && !error && (
-          <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center' }}>
-            <FileText size={48} style={{ color: 'var(--honey-gold)', margin: '0 auto 1rem', opacity: 0.8 }} />
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Ready to Verify</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '480px', margin: '0 auto' }}>
-              Enter a Honey Package ID above or scan the QR code printed on your honey package to retrieve full farm-to-table lineage.
+          <div className="glass-panel" style={{ padding: '2.5rem', textAlign: 'center' }}>
+            <FileText size={40} style={{ color: 'var(--honey-amber)', margin: '0 auto 0.75rem' }} />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.35rem' }}>Scan or Search to Verify</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', maxWidth: '450px', margin: '0 auto' }}>
+              Enter a Honey Package ID above or scan the QR code printed on your retail package to verify complete farm-to-table lineage.
             </p>
           </div>
         )}

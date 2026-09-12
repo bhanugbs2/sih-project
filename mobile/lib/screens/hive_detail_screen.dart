@@ -157,10 +157,11 @@ class _HiveDetailScreenState extends State<HiveDetailScreen> {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'Hardware Profile: ESP32 + DHT22 + SSD1306 OLED',
-                        style: TextStyle(fontSize: 12, color: AppTheme.darkTextSecondary),
+                        'Edge Gateway: Raspberry Pi 5 Edge IoT Gateway (RS-485 / Modbus)\nPhysical Node: ESP32 Prototype Node (DHT22 + OLED)',
+                        style: TextStyle(fontSize: 11, color: AppTheme.darkTextSecondary, height: 1.4),
                       ),
                       const SizedBox(height: 12),
+
 
                       // Sensor Telemetry Cards
                       Row(

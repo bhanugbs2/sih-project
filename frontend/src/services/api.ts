@@ -25,8 +25,12 @@ import {
   QualityEvaluationRequest,
   QualityEvaluationResponse,
   TelemetryAnalysisRequest,
-  TelemetryAnalysisResponse
+  TelemetryAnalysisResponse,
+  IoTGatewayDevice,
+  CreateGatewayRequest,
+  FleetSummaryResponse
 } from '../types';
+
 
 // System Status
 export const getSystemStatus = async () => {
@@ -250,10 +254,16 @@ export const createPackage = async (data: CreatePackageRequest): Promise<Package
   return response.data;
 };
 
+export const getAllPackages = async (): Promise<Package[]> => {
+  const response = await apiClient.get<Package[]>('/api/packages');
+  return response.data;
+};
+
 export const getPackageById = async (packageId: string): Promise<Package> => {
   const response = await apiClient.get<Package>(`/api/packages/${packageId}`);
   return response.data;
 };
+
 
 // Traceability Service
 export const getBatchTraceability = async (batchId: string): Promise<TraceabilityEvent[]> => {
@@ -292,4 +302,26 @@ export const getBlockchainConfigStatus = async (): Promise<any> => {
   const response = await apiClient.get('/api/blockchain/status');
   return response.data;
 };
+
+// IoT Gateway Fleet Service
+export const getAllGateways = async (): Promise<IoTGatewayDevice[]> => {
+  const response = await apiClient.get<IoTGatewayDevice[]>('/api/gateways');
+  return response.data;
+};
+
+export const getGatewayById = async (gatewayId: string): Promise<IoTGatewayDevice> => {
+  const response = await apiClient.get<IoTGatewayDevice>(`/api/gateways/${gatewayId}`);
+  return response.data;
+};
+
+export const getFleetSummary = async (): Promise<FleetSummaryResponse> => {
+  const response = await apiClient.get<FleetSummaryResponse>('/api/gateways/fleet-summary');
+  return response.data;
+};
+
+export const registerGateway = async (data: CreateGatewayRequest): Promise<IoTGatewayDevice> => {
+  const response = await apiClient.post<IoTGatewayDevice>('/api/gateways', data);
+  return response.data;
+};
+
 

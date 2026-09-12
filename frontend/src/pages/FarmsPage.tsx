@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { MainLayout } from '../components/layout/MainLayout';
 import { PageHeader, LoadingState, EmptyState, ErrorState, Modal } from '../components/common/UIComponents';
 import { getAllFarms, createFarm } from '../services/api';
 import { Farm } from '../types';
@@ -73,14 +72,14 @@ export const FarmsPage: React.FC = () => {
   };
 
   return (
-    <MainLayout>
+    <>
       <PageHeader
         title="Apiary Farms Management"
-        subtitle="Registered beekeeping locations, apiary owners, and geographical coordinates"
+        subtitle="Registered beekeeping apiary locations and manager assignments"
         actions={
           role === 'ADMIN' ? (
             <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
-              <Plus size={18} /> Register New Farm
+              <Plus size={16} /> + Register New Farm
             </button>
           ) : undefined
         }
@@ -97,31 +96,31 @@ export const FarmsPage: React.FC = () => {
           description="No beekeeping farms have been registered yet."
         />
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
           {farms.map((farm) => (
-            <div key={farm.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div key={farm.id} className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--honey-gold)' }}>
+                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--honey-brown)' }}>
                   {farm.farmId}
                 </span>
                 <span className="badge badge-success">OPERATIONAL</span>
               </div>
 
               <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 0.35rem 0', color: 'var(--text-primary)' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: '0 0 0.25rem 0', color: 'var(--text-primary)' }}>
                   {farm.name}
                 </h3>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                  <User size={14} /> Owner: <strong>{farm.ownerName}</strong>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                  <User size={14} /> Apiary Manager: <strong>{farm.ownerName}</strong>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.25rem' }}>
-                  <MapPin size={14} /> {farm.location || 'Location Not Specified'}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-muted)', fontSize: '0.825rem', marginTop: '0.2rem' }}>
+                  <MapPin size={14} /> {farm.location || 'Himachal Pradesh, India'}
                 </div>
               </div>
 
               {farm.latitude !== undefined && farm.longitude !== undefined && (
-                <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', paddingTop: '0.65rem', borderTop: '1px solid var(--border-color)' }}>
-                  GPS Coordinates: {farm.latitude.toFixed(4)}° N, {farm.longitude.toFixed(4)}° E
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
+                  Coordinates: {farm.latitude.toFixed(4)}° N, {farm.longitude.toFixed(4)}° E
                 </div>
               )}
             </div>
@@ -132,61 +131,65 @@ export const FarmsPage: React.FC = () => {
       {/* Register Farm Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Register New Apiary Farm">
         {formError && (
-          <div style={{ padding: '0.75rem', background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', borderRadius: 'var(--radius-md)', color: '#f43f5e', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          <div style={{ padding: '0.65rem 0.85rem', background: 'var(--status-danger-bg)', border: '1px solid var(--status-danger-border)', borderRadius: 'var(--radius-sm)', color: 'var(--status-danger)', fontSize: '0.825rem', marginBottom: '1rem' }}>
             {formError}
           </div>
         )}
         <form onSubmit={handleCreateFarm} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Farm Code / ID</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Farm Code / ID</label>
             <input
               type="text"
               placeholder="e.g. FARM-VAL-04"
               value={farmId}
               onChange={(e) => setFarmId(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
               required
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Farm Name</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Farm Name</label>
             <input
               type="text"
               placeholder="e.g. Highland Wildflower Apiary"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
               required
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Owner / Manager Name</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Manager Name</label>
             <input
               type="text"
               placeholder="e.g. Dr. Rajesh Sharma"
               value={ownerName}
               onChange={(e) => setOwnerName(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
               required
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Location Description</label>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Location Description</label>
             <input
               type="text"
               placeholder="e.g. Himachal Pradesh, India"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+              className="form-control"
+              style={{ width: '100%' }}
             />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Latitude (-90 to 90)</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Latitude</label>
               <input
                 type="number"
                 step="0.0001"
@@ -194,11 +197,12 @@ export const FarmsPage: React.FC = () => {
                 max="90"
                 value={latitude}
                 onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+                className="form-control"
+                style={{ width: '100%' }}
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Longitude (-180 to 180)</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>Longitude</label>
               <input
                 type="number"
                 step="0.0001"
@@ -206,12 +210,13 @@ export const FarmsPage: React.FC = () => {
                 max="180"
                 value={longitude}
                 onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: '#fff', outline: 'none' }}
+                className="form-control"
+                style={{ width: '100%' }}
               />
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Cancel</button>
             <button type="submit" className="btn-primary" disabled={submitting}>
               {submitting ? 'Saving...' : 'Register Farm'}
@@ -219,6 +224,6 @@ export const FarmsPage: React.FC = () => {
           </div>
         </form>
       </Modal>
-    </MainLayout>
+    </>
   );
 };

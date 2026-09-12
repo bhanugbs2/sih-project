@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MainLayout } from '../components/layout/MainLayout';
 import { PageHeader, StatusBadge, LoadingState, EmptyState, ErrorState } from '../components/common/UIComponents';
 import { getAllHives, getHiveAlerts, getAllAIAlerts, markAlertRead, acknowledgeAlert } from '../services/api';
 import { AIAlert } from '../types';
-import { AlertOctagon, ShieldAlert, ArrowRight, Clock, RefreshCw, CheckCircle2, Eye, Filter, Cpu } from 'lucide-react';
+import { AlertOctagon, ShieldAlert, ArrowRight, Clock, RefreshCw, CheckCircle2, Eye } from 'lucide-react';
 
 export const AlertsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -87,217 +86,179 @@ export const AlertsPage: React.FC = () => {
   const unreadCount = alerts.filter((a) => !a.isRead).length;
 
   return (
-    <MainLayout>
+    <>
       <PageHeader
-        title="AI Swarm & Health Alerts"
-        subtitle="Automated anomaly detection, telemetry drift indicators, and environmental risk scores"
+        title="AI-Assisted Pattern Screening & Early Warning"
+        subtitle="Automated environmental anomaly detection and beekeeper inspection alerts"
         actions={
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              <RefreshCw size={13} className="pulsing-icon" />
-              <span>Auto-refreshing (Updated {secondsAgo}s ago)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <RefreshCw size={13} />
+              <span>Updated {secondsAgo}s ago</span>
             </div>
-            <button className="btn-secondary" onClick={() => loadAlertsData(false)} style={{ fontSize: '0.85rem' }}>
-              <RefreshCw size={14} /> Refresh Now
+            <button className="btn-secondary" onClick={() => loadAlertsData(false)} style={{ fontSize: '0.8rem', gap: '0.35rem' }}>
+              <RefreshCw size={14} /> Refresh
             </button>
           </div>
         }
       />
 
       {/* Filter Tabs */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.35rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-          <button
-            onClick={() => setFilter('ALL')}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: 'var(--radius-sm)',
-              border: 'none',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              background: filter === 'ALL' ? 'var(--honey-gold)' : 'transparent',
-              color: filter === 'ALL' ? '#000' : 'var(--text-secondary)'
-            }}
-          >
-            All Alerts ({alerts.length})
-          </button>
-          <button
-            onClick={() => setFilter('UNREAD')}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: 'var(--radius-sm)',
-              border: 'none',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              background: filter === 'UNREAD' ? 'var(--accent-rose)' : 'transparent',
-              color: filter === 'UNREAD' ? '#fff' : 'var(--text-secondary)'
-            }}
-          >
-            Unread ({unreadCount})
-          </button>
-          <button
-            onClick={() => setFilter('CRITICAL')}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: 'var(--radius-sm)',
-              border: 'none',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              background: filter === 'CRITICAL' ? '#f43f5e' : 'transparent',
-              color: filter === 'CRITICAL' ? '#fff' : 'var(--text-secondary)'
-            }}
-          >
-            Critical
-          </button>
-          <button
-            onClick={() => setFilter('ACKNOWLEDGED')}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: 'var(--radius-sm)',
-              border: 'none',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              background: filter === 'ACKNOWLEDGED' ? 'var(--accent-emerald)' : 'transparent',
-              color: filter === 'ACKNOWLEDGED' ? '#000' : 'var(--text-secondary)'
-            }}
-          >
-            Acknowledged
-          </button>
-        </div>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setFilter('ALL')}
+          style={{
+            padding: '0.4rem 0.85rem',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-color)',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            background: filter === 'ALL' ? 'var(--honey-amber)' : 'var(--bg-secondary)',
+            color: filter === 'ALL' ? '#FFFFFF' : 'var(--text-secondary)'
+          }}
+        >
+          All Alerts ({alerts.length})
+        </button>
+        <button
+          onClick={() => setFilter('UNREAD')}
+          style={{
+            padding: '0.4rem 0.85rem',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-color)',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            background: filter === 'UNREAD' ? 'var(--status-danger)' : 'var(--bg-secondary)',
+            color: filter === 'UNREAD' ? '#FFFFFF' : 'var(--text-secondary)'
+          }}
+        >
+          Unread ({unreadCount})
+        </button>
+        <button
+          onClick={() => setFilter('CRITICAL')}
+          style={{
+            padding: '0.4rem 0.85rem',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-color)',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            background: filter === 'CRITICAL' ? 'var(--status-danger)' : 'var(--bg-secondary)',
+            color: filter === 'CRITICAL' ? '#FFFFFF' : 'var(--text-secondary)'
+          }}
+        >
+          Critical
+        </button>
+        <button
+          onClick={() => setFilter('ACKNOWLEDGED')}
+          style={{
+            padding: '0.4rem 0.85rem',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-color)',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            background: filter === 'ACKNOWLEDGED' ? 'var(--status-success)' : 'var(--bg-secondary)',
+            color: filter === 'ACKNOWLEDGED' ? '#FFFFFF' : 'var(--text-secondary)'
+          }}
+        >
+          Acknowledged
+        </button>
       </div>
 
       {loading ? (
-        <LoadingState message="Analyzing hive AI alerts log..." />
+        <LoadingState message="Fetching AI pattern screening alerts..." />
       ) : error ? (
         <ErrorState message={error} onRetry={() => loadAlertsData(false)} />
       ) : filteredAlerts.length === 0 ? (
         <EmptyState
           icon={AlertOctagon}
-          title={filter === 'ALL' ? 'No AI Alerts Triggered' : `No ${filter.toLowerCase()} alerts found`}
-          description="All monitored hives are operating within optimal environmental thresholds and screening guidelines."
+          title={filter === 'ALL' ? 'No Active Alerts' : `No ${filter.toLowerCase()} alerts found`}
+          description="All apiary hives are operating within standard environmental screening parameters."
         />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {filteredAlerts.map((alert) => (
             <div
               key={alert.id}
               className="glass-panel"
               style={{
-                padding: '1.5rem',
-                borderLeft: `5px solid ${
-                  alert.status === 'CRITICAL' ? '#f43f5e' : alert.status === 'WARNING' ? '#f59e0b' : '#10b981'
-                }`,
-                opacity: alert.isRead ? 0.85 : 1.0
+                padding: '1.25rem',
+                borderLeft: `4px solid ${
+                  alert.status === 'CRITICAL' ? 'var(--status-danger)' : alert.status === 'WARNING' ? 'var(--status-warning)' : 'var(--status-success)'
+                }`
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{
-                    padding: '0.5rem',
-                    borderRadius: 'var(--radius-md)',
-                    background: alert.status === 'CRITICAL' ? 'rgba(244, 63, 94, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                    color: alert.status === 'CRITICAL' ? '#f43f5e' : '#f59e0b'
-                  }}>
-                    <ShieldAlert size={20} />
-                  </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <ShieldAlert size={18} style={{ color: alert.status === 'CRITICAL' ? 'var(--status-danger)' : 'var(--status-warning)' }} />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+                      <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>
                         Hive: {alert.hiveId}
                       </h3>
                       {!alert.isRead && (
-                        <span style={{ padding: '0.15rem 0.45rem', borderRadius: '4px', background: 'var(--accent-rose)', color: '#fff', fontSize: '0.65rem', fontWeight: 700 }}>
-                          NEW / UNREAD
+                        <span style={{ padding: '0.1rem 0.4rem', borderRadius: '4px', background: 'var(--status-danger)', color: '#fff', fontSize: '0.65rem', fontWeight: 700 }}>
+                          UNREAD
                         </span>
                       )}
                     </div>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      Type: {alert.alertType || 'TELEMETRY_ANOMALY'} | Risk Score: {alert.riskScore}/100
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      AI-Assisted Screening Pattern Analysis
                     </span>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <StatusBadge status={alert.status} />
 
                   {!alert.isRead && (
                     <button
                       className="btn-secondary"
                       onClick={() => handleMarkRead(alert.id)}
-                      style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
-                      title="Mark as Read"
+                      style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}
                     >
-                      <Eye size={14} /> Mark Read
+                      <Eye size={13} /> Mark Read
                     </button>
                   )}
 
                   {alert.isAcknowledged ? (
-                    <span style={{ fontSize: '0.85rem', color: 'var(--accent-emerald)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', padding: '0.35rem 0.75rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: 'var(--radius-sm)' }}>
-                      <CheckCircle2 size={15} /> Acknowledged by {alert.acknowledgedBy || 'Beekeeper'}
+                    <span style={{ fontSize: '0.775rem', color: 'var(--status-success)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <CheckCircle2 size={13} /> Acknowledged
                     </span>
                   ) : (
                     <button
                       className="btn-primary"
                       onClick={() => handleAcknowledge(alert.id)}
-                      style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                      style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}
                     >
-                      <CheckCircle2 size={14} /> Acknowledge
+                      <CheckCircle2 size={13} /> Acknowledge
                     </button>
                   )}
 
                   <button
                     className="btn-secondary"
                     onClick={() => navigate(`/hives/${alert.hiveId}`)}
-                    style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                    style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}
                   >
-                    View Hive <ArrowRight size={14} />
+                    View Hive <ArrowRight size={13} />
                   </button>
                 </div>
               </div>
 
-              <p style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 500, margin: '0 0 0.75rem 0' }}>
+              <p style={{ color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: 500, margin: '0 0 0.5rem 0' }}>
                 {alert.message}
               </p>
 
-              {alert.factors && (
-                <div style={{
-                  padding: '0.65rem 0.85rem',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid var(--border-color)',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '0.75rem'
-                }}>
-                  <strong style={{ color: 'var(--honey-gold)' }}>Screening Factors:</strong> {alert.factors}
-                </div>
-              )}
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', color: 'var(--text-muted)', fontSize: '0.8rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <Clock size={14} />
-                  <span>Triggered: {new Date(alert.timestamp).toLocaleString()}</span>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  {alert.modelVersion && (
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <Cpu size={12} /> Model: {alert.modelVersion}
-                    </span>
-                  )}
-                  {alert.isAcknowledged && alert.acknowledgedAt && (
-                    <span>Ack Time: {new Date(alert.acknowledgedAt).toLocaleTimeString()}</span>
-                  )}
-                </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                <Clock size={13} />
+                <span>Detected At: {new Date(alert.timestamp).toLocaleString()}</span>
               </div>
             </div>
           ))}
         </div>
       )}
-    </MainLayout>
+    </>
   );
 };

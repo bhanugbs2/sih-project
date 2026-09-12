@@ -1,0 +1,16 @@
+[Unit]
+Description=HoneyChain Raspberry Pi 5 Edge IoT Gateway Service
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/opt/honeychain/gateway
+ExecStart=/usr/bin/python3 /opt/honeychain/gateway/edge_gateway.py
+Restart=always
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
