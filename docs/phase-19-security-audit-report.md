@@ -37,7 +37,7 @@ graph TD
     SecurityFilter --> AuthZ["RBAC Authorization<br/>(ADMIN / BEEKEEPER / QUALITY_INSPECTOR)"]
     AuthZ --> CoreService["Core Supply Chain Services"]
     PublicEndpoint --> PublicService["Verification Lineage Service"]
-    
+
     CoreService --> DB["PostgreSQL Database"]
     CoreService --> EVM["Hardhat Local EVM Blockchain"]
 ```
